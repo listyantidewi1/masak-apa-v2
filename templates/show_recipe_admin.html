@@ -1,0 +1,46 @@
+<!-- {{ recipe['name'] }}<br />
+{{ recipe['image'] }} 
+{% for ingredient in ingredients %}
+    {{ ingredient['name'] }}
+    {{ ingredient['qty'] }}<br/>
+{% endfor %}
+<br />
+{% for unit in units%}
+    {{ unit['name'] }}<br/>
+{% endfor %} -->
+
+{% extends "layout_admin.html" %} {% block title %} {{ recipe['name'] }} {%
+endblock %} {% block main %}
+<div class="container">
+  <h1 class="text-center">{{ recipe['name'] }}</h1>
+  <div class="row mt-2">
+    <div class="col-md-6 mt-4">
+      <img
+        src="/static/uploads/{{ recipe['image'] }}"
+        style="width: 100%; height: auto"
+      />
+    </div>
+    <div class="col-md-2 mt-4">
+      <h3>Ingredients</h3>
+      {% for ingredient in ingredients %} {{ ingredient['name'] }} <br />{%
+      endfor %}
+    </div>
+    <div class="col-md-2 mt-4">
+      <h3>Quantity</h3>
+      {% for ingredient in ingredients %} {{ ingredient['qty'] }} <br />{%
+      endfor %}
+    </div>
+    <div class="col-md-2 mt-4">
+      <h3>Unit</h3>
+      {% for unit in units %} {{ unit['name'] }}<br />
+      {% endfor %}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12 mt-3">
+      <h3>Instructions</h3>
+      {{ instructions['instructions'] }}
+    </div>
+  </div>
+</div>
+{% endblock %}

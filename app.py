@@ -331,7 +331,12 @@ def add_recipes_2(id):
 @app.route("/admin/recipe/show/<id>", methods=["GET"])
 @login_admin_required
 def show_recipe_admin(id):
-    return render_template("show_recipe_admin.html")
+    recipe = db.execute("select * from recipes where id = ?", id)[0]
+    print(recipe)
+    ingredients = db.execute("select * from recipe_ingredients inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id where recipe_id = ?", id)
+    instructions = db.execute("select * from instructions where recipe_id = ?", id)[0]
+    units = db.execute("select * from recipe_ingredients inner join units on recipe_ingredients.unit_id = units.id where recipe_id = ?", id)
+    return render_template("show_recipe_admin.html", recipe=recipe, ingredients=ingredients, instructions=instructions, units=units)
 
 @app.route("/admin/users", methods=["GET"])
 @login_admin_required
