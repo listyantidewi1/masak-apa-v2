@@ -290,7 +290,10 @@ def add_recipes():
             current_recipe = db.execute("select id from recipes order by id desc limit 1")[0]
             print(current_recipe['id'])
             current_recipe_id = str(current_recipe['id'])
-            return redirect("/admin/recipes/add/"+current_recipe_id)
+            ingredients = db.execute("select * from ingredients")
+            units = db.execute("select * from units")
+
+            return render_template("add_ingredients_instructions_admin.html", id = current_recipe_id, ingredients = ingredients, units = units)
         else:
             return apology("pilih file dulu")
 
@@ -298,7 +301,37 @@ def add_recipes():
 @login_admin_required
 def add_recipes_2(id):
     print(id)
-    return(id)
+    if request.method == "GET":
+        ingredients = db.execute("SELECT * from ingredients")
+        units = db.execute("select * from units")
+        return render_template('add_ingredients_instructions_admin.html', ingredients=ingredients, units=units, id=id)
+    elif request.method == "POST":
+        if not request.form.get("ingredients"):
+            return apology("choose at least one ingredient")
+        elif not request.form.get("quantity"):
+            return apology("input quantity")
+        elif not request.form.get("unit"):
+            return apology("specify the measurement unit")
+        ingredients = request.form.getlist("ingredients") #this will return a list / dictionary
+        quantities = request.form.getlist("quantity")
+        units = request.form.getlist("unit")
+        instruction = request.form.get("instruction")
+        print(ingredients)
+        print(quantities)
+        print(units)
+        for (ingredient, quantity, unit) in zip(ingredients, quantities, units):
+            db.execute("insert into recipe_ingredients(recipe_id, ingredients_id, qty, unit_id) values(?,?,?,?)",id, ingredient, quantity, unit)
+        db.execute("insert into instructions(recipe_id, instructions) values(?,?)", id, instruction)
+        return redirect('/admin/recipe/show/'+id)
+
+    # print(id)
+    # return(id)
+
+# show a recipe detail
+@app.route("/admin/recipe/show/<id>", methods=["GET"])
+@login_admin_required
+def show_recipe_admin(id):
+    return render_template("show_recipe_admin.html")
 
 @app.route("/admin/users", methods=["GET"])
 @login_admin_required
