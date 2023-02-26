@@ -394,7 +394,7 @@ def register():
             session["role"] = registered_user[0]["role"]
             session["name"] = registered_user[0]["name"]
             flash("You were sucessfully registered")
-            return redirect("/")
+            return redirect("/dashboard")
         else:
             return apology("Konfirmasi password nggak sama?", 400)
     else:
@@ -410,7 +410,6 @@ def login():
             return apology("belum ngisi username?", 403)
         elif not request.form.get("password"):
             return apology("belum ngisi password", 403)
-
         rows = db.execute("SELECT * from users where username = ?", request.form.get("username"))
         if len(rows) != 1 or not check_password_hash(rows[0]["password"], request.form.get("password")):
             return apology("Password/username salah?", 403)
