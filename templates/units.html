@@ -1,0 +1,44 @@
+{% extends "layout_admin.html" %}
+
+{% block title %}
+    IMeasurement Units
+{% endblock %}
+
+{% block main %}
+<div class="container-fluid mb-3">
+    <form action="/admin/units" method="post">
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control" id="origin" name="unit" placeholder="Add a new measurement unit" type="text">
+        </div>
+        <div class="mb-3">
+            <button class="btn btn-primary form-control" type="submit">Add</button>
+        </div>
+    </form>
+</div>
+<hr>
+<div class="container-sm mt-3">
+    <h2 class="text-center">Measurement Units</h2>
+    <div class="mb-5"></div>
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Unit ID</th>
+                <th>Unit Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for unit in units %}
+            <tr>
+                <td>{{ unit["id"] }}</td>
+                <td>{{ unit["name"] }}</td>
+                <td>
+                    <a href="/admin/units/{{ unit['id'] }}/edit" class="btn btn-warning">Edit</a>
+                    <a href="/admin/units/{{ unit['id'] }}/delete" onclick="return confirm('Are you sure you want to delete this item?');" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

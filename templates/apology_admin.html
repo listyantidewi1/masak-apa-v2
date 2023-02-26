@@ -1,0 +1,14 @@
+{% extends "layout_admin.html" %}
+
+{% block title %}
+    Apology
+{% endblock %}
+
+{% block main %}
+    <div class="container-fluid">
+    <!-- https://memegen.link/ -->
+        <img alt="{{ top }}" src="https://api.memegen.link/images/both/{{ top | urlencode }}/{{ bottom | urlencode }}.png" title="{{ top }}" style="width: 40%">
+    </div>
+
+
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "layout_admin.html" %}
+
+{% block title %}
+    Ingredients
+{% endblock %}
+
+{% block main %}
+
+<div class="container">
+    <h1 class="text-center mb-3">Add a new ingredient</h1>
+    <form action="/admin/ingredients" method="post" enctype = "multipart/form-data">
+        <div class="form-group mb-3">
+            <label for="name">Ingredient name</label>
+            <input autocomplete="off" autofocus class="form-control" id="name" name="name" placeholder="Type ingredient name" type="text">
+        </div>
+        <div class="form-group mb-3">
+            <label for="origin">Ingredient origin</label>
+            <select name="origin" id="origin" class="form-control">
+                {% for origin in listOris %}
+                    <option value="{{ origin['id'] }}">{{ origin["origin"] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group mb-3">
+            <label for="category">Ingredient category</label>
+            <select name="category" id="category" class="form-control">
+                {% for category in listCats %}
+                    <option value="{{ category['id'] }}">{{ category["category"] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group mb-3">
+            <label for="file">Add image</label>
+            <input type="file" class="form-control" name="file">
+        </div>
+        <div class="form-group mb-3">
+            <label for="description">Ingredient description</label>
+            <textarea name="description" class="form-control" placeholder="Describe a little bit about the ingredient"></textarea>
+        </div>
+        <div class="form-group mb-3">
+            <button class="btn btn-primary form-control" type="submit" value="submit">Add</button>
+        </div>
+    </form>
+</div>
+<hr>
+
+<div class="container-sm mt-3">
+    <h2 class="text-center">List of Ingredients</h2>
+    <div class="mb-5"></div>
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Ingredient ID</th>
+                <th>Name</th>
+                <th>Origin</th>
+                <th>Category</th>
+                <th>Image</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ingredient in ingredients %}
+            <tr>
+                <td>{{ ingredient["id"] }}</td>
+                <td>{{ ingredient["name"] }}</td>
+                <td>{{ ingredient["origin"] }}</td>
+                <td>{{ ingredient["category"] }}</td>
+                <!-- <td><img src="/static/uploads/{{ ingredient['image'] }}" style="width: 10%"></td> -->
+                <td><a href="/static/uploads/{{ ingredient['image'] }}">View Image</a></td>
+                <td>
+                    <a href="/admin/ingredients/{{ ingredient['id'] }}/edit" class="btn btn-warning">Edit</a>
+                    <a href="/admin/ingredients/{{ ingredient['id'] }}/delete" onclick="return confirm('Are you sure you want to delete this item?');" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
