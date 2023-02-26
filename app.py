@@ -353,8 +353,14 @@ def user_dashboard():
         if not request.form.get("ingredients"):
             return apology("pilih dulu minimal 1 ingredients")
         keywords = request.form.getlist("ingredients")
-        results = db.execute("")
-        return render_template("dashboard.html", name=name[0], results=results)
+        print(keywords[0])
+        results = list()
+        for i in range(len(keywords)):
+            result = db.execute("select recipes.id, recipes.name as recipe_name, recipes.image, recipes.description, recipe_ingredients.qty, instructions.instructions, units.name as unit_name from recipes inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id inner join units on recipe_ingredients.unit_id = units.id inner join instructions on recipes.id = instructions.recipe_id where recipe_ingredients.ingredients_id = ?", keywords[i])
+            results.append(result)
+        print(results[0])
+        prompt ="Here are some recipes for you!"
+        return render_template("dashboard.html", name=name[0], results=results[0], prompt=prompt)
 
 @app.route('/', methods=["GET"])
 def landingpage():
