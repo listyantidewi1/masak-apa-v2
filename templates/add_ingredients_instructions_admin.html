@@ -25,31 +25,45 @@ Instructions {% endblock %} {% block main %}
             value="{{ ingredient['id'] }}"
             class="form-check-input mb-2"
           />
-          <label class="form-check-label" for="ingredient"> {{ ingredient['name'] }}</label><br/>
+          <label class="form-check-label" for="ingredient">
+            {{ ingredient['name'] }}</label
+          ><br />
           {% endfor %}
         </div>
       </div>
       <div class="col-md-3">
         <div class="form-group mb-3">
           {% for ingredient in ingredients %}
-          <input class="form-control" type="text" name="quantity" placeholder="Input quantity" />
+          <input
+            class="form-control"
+            type="number"
+            name="quantity"
+            placeholder="Input quantity"
+          />
           {% endfor %}
         </div>
       </div>
       <div class="col-md-3">
         <div class="form-group mb-3">
-        {% for ingredient in ingredients %}
+          {% for ingredient in ingredients %}
           <select name="unit" id="unit" class="form-control">
+            <option value="none" selected disabled hidden>
+              Select an Option
+            </option>
             {% for unit in units %}
-            <option class="form-control" value="{{ unit['id'] }}">{{ unit['name'] }}</option>
+            <option class="form-control" value="{{ unit['id'] }}">
+              {{ unit['name'] }}
+            </option>
             {% endfor %}
           </select>
-        {% endfor %}
+          {% endfor %}
         </div>
       </div>
       <div class="col-md-3">
         <div class="form-group mb-3">
-          <textarea name="instruction" class="form-control">Type recipe instructions here</textarea>
+          <textarea name="instruction" class="form-control">
+Type recipe instructions here</textarea
+          >
         </div>
       </div>
     </div>

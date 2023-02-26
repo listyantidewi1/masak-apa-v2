@@ -1,0 +1,33 @@
+{% extends "layout.html" %} {% block title %} Member Dashboard {% endblock %} {%
+block main %} {% with messages = get_flashed_messages() %} {% if messages %}
+<ul class="flashes">
+  {% for message in messages %} {% endfor %}
+</ul>
+{% endif %} {% endwith %}
+<div class="container">
+  <div class="row mt-3">
+    {% if results %}
+    <h4 class="text-center" style="display: inline">{{ prompt }}</h4>
+    <p class="my-3" style="display: inline">
+      <a href="/dashboard">Back to search page</a>
+    </p>
+    {% endif %} {% for result in results %}
+    <div class="col-md-6 mt-3">
+      <a href="/recipe/show/{{ result['id'] }}">
+        <h3>{{ result['recipe_name'] }}</h3></a
+      >
+      <p>{{ result['description'] }}</p>
+      <!-- {{ result }} -->
+    </div>
+    <div class="col-md-6 mt-3">
+      <img
+        src="/static/uploads/{{ result['image'] }}"
+        style="width: 50%"
+        class="img-thumbnail"
+      />
+    </div>
+
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

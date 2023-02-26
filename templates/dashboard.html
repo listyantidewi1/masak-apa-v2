@@ -8,9 +8,9 @@ block main %} {% with messages = get_flashed_messages() %} {% if messages %}
 <div class="container mt-5">
   <div class="row">
     <h2 class="text-center">Search for recipes</h2>
-    <h5 class="text-center">Tell us which ingredient(s) you have...</h5>
+    <h5 class="text-center mt-3">Tell us which ingredient(s) you have...</h5>
     <form action="/dashboard" method="post" enctype="multipart/form-data">
-      <div class="col-md-12">
+      <div class="col-md-12 mt-3">
         {% for ingredient in ingredients %}
         <input
           type="checkbox"
@@ -24,7 +24,7 @@ block main %} {% with messages = get_flashed_messages() %} {% if messages %}
         >
         {% endfor %}
       </div>
-      <div class="form-group mb-3">
+      <div class="form-group mt-3">
         <button
           class="btn btn-primary form-control"
           type="submit"
@@ -35,27 +35,27 @@ block main %} {% with messages = get_flashed_messages() %} {% if messages %}
       </div>
     </form>
   </div>
-  <div class="row">
-    <h2 class="text-center">{{ prompt }}</h2>
-    {% for result in results %}
-    <div class="col-md-6">
-      <a href="/recipe/show/{{ result['id'] }}">
-        <h6>{{ result['recipe_name'] }}</h6></a
-      >
-      <p>{{ result['description'] }}</p>
+  <div class="container-lg mt-3">
+    <h2>Latest Recipes</h2>
+    <div class="row mt-2">
+      {% for latest_recipe in latest_recipes %}
+      <div class="col-lg-3 mt-2">
+        <div class="card" style="width: 100%">
+          <img
+            src="/static/uploads/{{ latest_recipe['image'] }}"
+            class="card-img-top card-size"
+            alt="IoT course thumbnail"
+          />
+          <div class="card-body">
+            <h5 class="card-title">{{ latest_recipe["recipe_name"] }}</h5>
+            <p class="card-text">{{ latest_recipe["description"] }}</p>
+            <a href="#" class="btn btn-primary">View More</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
     </div>
-    <div class="col-md-6">
-      <img
-        src="/static/uploads/{{ result['image'] }}"
-        style="width: 50%"
-        class="img-thumbnail"
-      />
-    </div>
-
-    {% endfor %}
-  </div>
-  <div class="row">
-    <h2 class="text-center">Latest Recipes</h2>
+    <div class="spacing p-4"></div>
   </div>
 </div>
 

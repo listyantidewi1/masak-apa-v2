@@ -24,6 +24,8 @@ Session(app)
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///masakapa.sqlite")
 
+search_result = []
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -267,15 +269,18 @@ def add_recipes():
             return apology("name belum diisi")
         elif not request.form.get("origin"):
             return apology("origin belum diisi")
+        elif not request.form.get("description"):
+            return apology("description belum diisi")
         name = request.form.get("name")
         origin = request.form.get("origin")
+        description = request.form.get("description")
         f = request.files['file']
         if f.filename == '':
             return apology("No selected file")
         if f and allowed_file(f.filename):
             filename = secure_filename(f.filename)
             f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            db.execute("insert into recipes(name, origin_id, image) values(?,?,?)", name, origin, filename)
+            db.execute("insert into recipes(name, origin_id, image, description) values(?,?,?,?)", name, origin, filename, description)
             current_recipe = db.execute("select id from recipes order by id desc limit 1")[0]
             print(current_recipe['id'])
             current_recipe_id = str(current_recipe['id'])
@@ -295,19 +300,35 @@ def add_recipes_2(id):
         units = db.execute("select * from units")
         return render_template('add_ingredients_instructions_admin.html', ingredients=ingredients, units=units, id=id)
     elif request.method == "POST":
-        if not request.form.get("ingredients"):
-            return apology("choose at least one ingredient")
-        elif not request.form.get("quantity"):
-            return apology("input quantity")
-        elif not request.form.get("unit"):
-            return apology("specify the measurement unit")
+        # if not request.form.get("ingredients"):
+        #     return apology("choose at least one ingredient")
+        # elif not request.form.get("quantity"):
+        #     return apology("input quantity")
+        # elif not request.form.get("unit"):
+        #     return apology("specify the measurement unit")
         ingredients = request.form.getlist("ingredients") #this will return a list / dictionary
-        quantities = request.form.getlist("quantity")
-        units = request.form.getlist("unit")
-        instruction = request.form.get("instruction")
         print(ingredients)
+        while("" in ingredients):
+            ingredients.remove("")
+        # ingredients.remove('')
+        print(ingredients)
+            
+        quantities = request.form.getlist("quantity")
         print(quantities)
+        while("" in quantities):
+            quantities.remove("")
+        # quantities.remove('')
+        print(quantities)
+
+        units = request.form.getlist("unit")
         print(units)
+        while("" in units):
+            units.remove("")
+        # units.remove('')
+        print(units)
+
+        instruction = request.form.get("instruction")
+        
         for (ingredient, quantity, unit) in zip(ingredients, quantities, units):
             db.execute("insert into recipe_ingredients(recipe_id, ingredients_id, qty, unit_id) values(?,?,?,?)",id, ingredient, quantity, unit)
         db.execute("insert into instructions(recipe_id, instructions) values(?,?)", id, instruction)
@@ -325,7 +346,16 @@ def show_recipe_admin(id):
     ingredients = db.execute("select * from recipe_ingredients inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id where recipe_id = ?", id)
     instructions = db.execute("select * from instructions where recipe_id = ?", id)[0]
     units = db.execute("select * from recipe_ingredients inner join units on recipe_ingredients.unit_id = units.id where recipe_id = ?", id)
-    return render_template("show_recipe_admin.html", recipe=recipe, ingredients=ingredients, instructions=instructions, units=units)
+    return render_template("show_recipe_admin.html", recipe=recipe, ingredients=ingredients, instructions=instructions, units=units)# show a recipe detail
+
+@app.route("/recipe/show/<id>", methods=["GET"])
+def show_recipe(id):
+    recipe = db.execute("select * from recipes where id = ?", id)[0]
+    print(recipe)
+    ingredients = db.execute("select * from recipe_ingredients inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id where recipe_id = ?", id)
+    instructions = db.execute("select * from instructions where recipe_id = ?", id)[0]
+    units = db.execute("select * from recipe_ingredients inner join units on recipe_ingredients.unit_id = units.id where recipe_id = ?", id)
+    return render_template("show_recipe.html", recipe=recipe, ingredients=ingredients, instructions=instructions, units=units)
 
 @app.route("/admin/users", methods=["GET"])
 @login_admin_required
@@ -348,19 +378,33 @@ def user_dashboard():
     name = db.execute("select name from users where id = ?", id)
     if request.method == "GET":
         ingredients = db.execute("select * from ingredients")
-        return render_template("dashboard.html", name=name[0], ingredients=ingredients)
+        latest_recipes = db.execute("select recipes.id, recipes.name as recipe_name, recipes.image, recipes.description, recipe_ingredients.qty, instructions.instructions, units.name as unit_name from recipes inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id inner join units on recipe_ingredients.unit_id = units.id inner join instructions on recipes.id = instructions.recipe_id group by recipes.id order by recipes.created_at desc limit 4")
+        return render_template("dashboard.html", name=name[0], ingredients=ingredients, latest_recipes=latest_recipes)
     elif request.method == "POST":
         if not request.form.get("ingredients"):
             return apology("pilih dulu minimal 1 ingredients")
         keywords = request.form.getlist("ingredients")
-        print(keywords[0])
-        results = list()
-        for i in range(len(keywords)):
-            result = db.execute("select recipes.id, recipes.name as recipe_name, recipes.image, recipes.description, recipe_ingredients.qty, instructions.instructions, units.name as unit_name from recipes inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id inner join units on recipe_ingredients.unit_id = units.id inner join instructions on recipes.id = instructions.recipe_id where recipe_ingredients.ingredients_id = ?", keywords[i])
-            results.append(result)
-        print(results[0])
+        print(keywords)
+        where_clause = ""
+        for i in range(1, len(keywords)):
+            where_clause += " or recipe_ingredients.ingredients_id = " + keywords[i]
+        where_clause = "where recipe_ingredients.ingredients_id = " +keywords[0] + where_clause
+        print(where_clause)
+       
+        # results = list()
+        results = db.execute("select recipes.id, recipes.name as recipe_name, recipes.image, recipes.description, recipe_ingredients.qty, instructions.instructions, units.name as unit_name from recipes inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id inner join units on recipe_ingredients.unit_id = units.id inner join instructions on recipes.id = instructions.recipe_id "+ where_clause + " group by recipes.id")
+            # results.append(result)
+        print(results)
+        global search_result
+        search_result = results
         prompt ="Here are some recipes for you!"
-        return render_template("dashboard.html", name=name[0], results=results[0], prompt=prompt)
+        return render_template("search_result.html", results=results, prompt=prompt)
+
+@app.route('/show_search_results', methods=['GET', 'POST'])
+def show_search_results():
+    prompt ="Here are some recipes for you!"
+    return render_template("search_result.html", results=search_result, prompt=prompt)
+
 
 @app.route('/', methods=["GET"])
 def landingpage():
