@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Member Dashboard
+{% endblock %}
+
+{% block main %}
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+    <h1 class="text-center">Howdy! {{ name['name'] }}</h1>
+    <div class="container mt-5">
+
+        <div class="row">
+            <h2 class="text-center">Search for recipes</h2>
+            <h4 class="text-center">Pick some ingredients!</h4>
+
+            <form action="/dashboard" method="post" enctype="multipart/form-data">
+            <div class="col-md-12">
+                {% for ingredient in ingredients %}
+                <input
+                  type="checkbox"
+                  name="ingredients"
+                  id="ingredient"
+                  value="{{ ingredient['id'] }}"
+                  class="form-check-input mb-2"
+                />
+                <label class="form-check-label" for="ingredient"> {{ ingredient['name'] }}</label>
+                {% endfor %}
+            </div>
+            <div class="form-group mb-3">
+                <button class="btn btn-primary form-control" type="submit" value="submit">
+                  Search
+                </button>
+              </div>
+            </form>
+            
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                {{ keywords }}
+            </div>
+        </div>
+        <div class="row">
+            <h2 class="text-center">Latest Recipes</h2>
+        </div>
+    </div>
+
+
+{% endblock %}

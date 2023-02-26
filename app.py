@@ -36,17 +36,6 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
-
-@app.route("/")
-def index():
-    return apology("Final project belum dikerjain?", 403)
-
-
-@app.route("/member")
-@login_required
-def member_dashboard():
-    return apology("Member dashboard beum dikerjain?", 403)
-
 @app.route("/member/add")
 @login_required
 def add():
@@ -351,10 +340,29 @@ def users():
 def admin_profile():
     return apology("Bagian profile belum dikerjain?", 403)
 
+@app.route("/dashboard", methods=["GET", "POST"])
+@login_required
+def user_dashboard():
+    #name = session["name"]
+    id = session["user_id"]
+    name = db.execute("select name from users where id = ?", id)
+    if request.method == "GET":
+        ingredients = db.execute("select * from ingredients")
+        return render_template("dashboard.html", name=name[0], ingredients=ingredients)
+    elif request.method == "POST":
+        if not request.form.get("ingredients"):
+            return apology("pilih dulu minimal 1 ingredients")
+        keywords = request.form.getlist("ingredients")
+        results = db.execute("")
+        return render_template("dashboard.html", name=name[0], results=results)
+
+@app.route('/', methods=["GET"])
+def landingpage():
+    return render_template("index.html")
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     session.clear()
-
     if request.method=="POST":
         if not request.form.get("username"):
             return apology("belum ngisi username?", 400)
@@ -412,7 +420,7 @@ def login():
                 session["role"] = rows[0]["role"]
                 session["name"] = rows[0]["name"]
                 flash("You were sucessfully logged in")
-                return redirect("/")
+                return redirect("/dashboard")
             elif rows[0]["role"] == "admin":
                 session["user_id"] = rows[0]["id"]
                 session["role"] = rows[0]["role"]
