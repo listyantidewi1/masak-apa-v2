@@ -1,10 +1,7 @@
 {% extends "layout_admin.html" %} {% block title %} Add Ingredients and
 Instructions {% endblock %} {% block main %}
 <div class="container">
-  <div class="row">
-    <div class="col-md-6">recipe id = {{ id }} display recipe title here</div>
-    <div class="col-md-6">display recipe image here</div>
-  </div>
+  <div class="row"></div>
 </div>
 <div class="container">
   <h1 class="text-center my-3">Add Ingredients and Instructions</h1>
@@ -14,7 +11,7 @@ Instructions {% endblock %} {% block main %}
     method="post"
     enctype="multipart/form-data"
   >
-    <div class="row">
+    <!-- <div class="row">
       <div class="col-md-3">
         <div class="form-check mb-3">
           {% for ingredient in ingredients %}
@@ -23,9 +20,9 @@ Instructions {% endblock %} {% block main %}
             name="ingredients"
             id="ingredient"
             value="{{ ingredient['id'] }}"
-            class="form-check-input mb-2"
+            class="form-check-input mb-3"
           />
-          <label class="form-check-label" for="ingredient">
+          <label class="form-check-label mb-3" for="ingredient">
             {{ ingredient['name'] }}</label
           ><br />
           {% endfor %}
@@ -66,9 +63,76 @@ Type recipe instructions here</textarea
           >
         </div>
       </div>
-    </div>
+    </div> -->
 
-    <div class="form-group mb-3">
+    <!-- <div class="form-group mb-3">
+      <button class="btn btn-primary form-control" type="submit" value="submit">
+        Add
+      </button>
+    </div> -->
+    <div class="row">
+      <table class="table table-striped table-hover">
+        <thead class="text-center">
+          <tr>
+            <th>Ingredients</th>
+            <th>Quantity</th>
+            <th>Units</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ingredient in ingredients %}
+          <tr>
+            <td>
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  name="ingredients"
+                  id="ingredient"
+                  value="{{ ingredient['id'] }}"
+                  class="form-check-input"
+                />
+                <label class="form-check-label" for="ingredient">
+                  {{ ingredient['name'] }}</label
+                >
+              </div>
+            </td>
+            <td>
+              <div class="form-group">
+                <input
+                  class="form-control"
+                  type="number"
+                  name="quantity"
+                  placeholder="Input quantity"
+                />
+              </div>
+            </td>
+            <td>
+              <div class="form-group">
+                <select name="unit" id="unit" class="form-control">
+                  <option value="none" selected disabled hidden>
+                    Select an Option
+                  </option>
+                  {% for unit in units %}
+                  <option class="form-control" value="{{ unit['id'] }}">
+                    {{ unit['name'] }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="row">
+      <div class="form-group mt-3">
+        <h3 class="text-center">Instructions</h3>
+        <textarea name="instruction" class="form-control" rows="8"></textarea
+        >
+      </div>
+    </div>
+    <div class="form-group">
       <button class="btn btn-primary form-control" type="submit" value="submit">
         Add
       </button>

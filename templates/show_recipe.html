@@ -12,8 +12,10 @@
 {% extends "layout.html" %} {% block title %} {{ recipe['name'] }} {%
 endblock %} {% block main %}
 <div class="container">
-  {% if is_search > 0 %}
+  {% if is_search >= 1 %}
     <a class="mt-3" href="/show_search_results">Back to search results</a>
+  <!-- {% else %}
+  <a class="mt-3" href="/recipe/show/all">Browse Recipes</a> -->
   {% endif %}
   <h1 class="text-center mt-3">{{ recipe['name'] }}</h1>
   <div class="row mt-2">

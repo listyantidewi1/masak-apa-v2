@@ -14,6 +14,7 @@ endblock %} {% block main %}
 <div class="container">
   <h1 class="text-center">{{ recipe['name'] }}</h1>
   <div class="row mt-2">
+    <a href="/admin/recipes">Back to list of recipes</a>
     <div class="col-md-6 mt-4">
       <img
         src="/static/uploads/{{ recipe['image'] }}"
