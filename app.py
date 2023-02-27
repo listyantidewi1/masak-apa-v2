@@ -348,15 +348,6 @@ def show_recipe_admin(id):
     units = db.execute("select * from recipe_ingredients inner join units on recipe_ingredients.unit_id = units.id where recipe_id = ?", id)
     return render_template("show_recipe_admin.html", recipe=recipe, ingredients=ingredients, instructions=instructions, units=units)# show a recipe detail
 
-@app.route("/recipe/show/<id>", methods=["GET"])
-def show_recipe(id):
-    recipe = db.execute("select * from recipes where id = ?", id)[0]
-    print(recipe)
-    ingredients = db.execute("select * from recipe_ingredients inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id where recipe_id = ?", id)
-    instructions = db.execute("select * from instructions where recipe_id = ?", id)[0]
-    units = db.execute("select * from recipe_ingredients inner join units on recipe_ingredients.unit_id = units.id where recipe_id = ?", id)
-    return render_template("show_recipe.html", recipe=recipe, ingredients=ingredients, instructions=instructions, units=units)
-
 @app.route("/admin/users", methods=["GET"])
 @login_admin_required
 def users():
@@ -373,12 +364,15 @@ def admin_profile():
 @app.route("/dashboard", methods=["GET", "POST"])
 @login_required
 def user_dashboard():
+    global search_result
     #name = session["name"]
     id = session["user_id"]
     name = db.execute("select name from users where id = ?", id)
     if request.method == "GET":
         ingredients = db.execute("select * from ingredients")
         latest_recipes = db.execute("select recipes.id, recipes.name as recipe_name, recipes.image, recipes.description, recipe_ingredients.qty, instructions.instructions, units.name as unit_name from recipes inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id inner join units on recipe_ingredients.unit_id = units.id inner join instructions on recipes.id = instructions.recipe_id group by recipes.id order by recipes.created_at desc limit 4")
+        # global search_result
+        search_result.clear()
         return render_template("dashboard.html", name=name[0], ingredients=ingredients, latest_recipes=latest_recipes)
     elif request.method == "POST":
         if not request.form.get("ingredients"):
@@ -395,7 +389,7 @@ def user_dashboard():
         results = db.execute("select recipes.id, recipes.name as recipe_name, recipes.image, recipes.description, recipe_ingredients.qty, instructions.instructions, units.name as unit_name from recipes inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id inner join units on recipe_ingredients.unit_id = units.id inner join instructions on recipes.id = instructions.recipe_id "+ where_clause + " group by recipes.id")
             # results.append(result)
         print(results)
-        global search_result
+        
         search_result = results
         prompt ="Here are some recipes for you!"
         return render_template("search_result.html", results=results, prompt=prompt)
@@ -404,6 +398,16 @@ def user_dashboard():
 def show_search_results():
     prompt ="Here are some recipes for you!"
     return render_template("search_result.html", results=search_result, prompt=prompt)
+
+@app.route("/recipe/show/<id>", methods=["GET"])
+def show_recipe(id):
+    recipe = db.execute("select * from recipes where id = ?", id)[0]
+    print(recipe)
+    ingredients = db.execute("select * from recipe_ingredients inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id where recipe_id = ?", id)
+    instructions = db.execute("select * from instructions where recipe_id = ?", id)[0]
+    units = db.execute("select * from recipe_ingredients inner join units on recipe_ingredients.unit_id = units.id where recipe_id = ?", id)
+    is_search = len(search_result)
+    return render_template("show_recipe.html", is_search=is_search, results=search_result, recipe=recipe, ingredients=ingredients, instructions=instructions, units=units)
 
 
 @app.route('/', methods=["GET"])
