@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block title %} Recipes {% endblock %}
+
+{% block main %}
+<div class="container-lg mt-3">
+    <h2>Browse for Recipes</h2>
+    <div class="row mt-2">
+      {% for recipe in recipes %}
+      <div class="col-lg-3 mt-2">
+        <div class="card" style="width: 100%">
+          <img
+            src="/static/uploads/{{ recipe['image'] }}"
+            class="card-img-top card-size"
+            alt="IoT course thumbnail"
+          />
+          <div class="card-body">
+            <h5 class="card-title">{{ recipe["recipe_name"] }}</h5>
+            <p class="card-text">{{ recipe["description"] }}</p>
+            <a href="/recipe/show/{{ recipe['id'] }}" class="btn btn-primary">View More</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="spacing p-4"></div>
+  </div>
+{% endblock %}

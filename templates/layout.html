@@ -31,7 +31,8 @@
                 <div class="collapse navbar-collapse" id="navbar">
                     {% if session["user_id"] %}
                         <ul class="navbar-nav me-auto mt-2">
-                            <li class="nav-item"><a class="nav-link" href="/browse">Browse Recipe</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/recipe/show/all">Browse Recipe</a></li>
                             <li class="nav-item"><a class="nav-link" href="/add">Submit Recipe</a></li>
                             <li class="nav-item"><a class="nav-link" href="/profile">Profile</a></li>
 
@@ -41,6 +42,8 @@
                         </ul>
                     {% else %}
                         <ul class="navbar-nav ms-auto mt-2">
+                            <li class="nav-item"><a class="nav-link" href="/recipe/show/all">Browse Recipe</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/recipe/search">Search Recipes</a></li>
                             <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
                             <li class="nav-item"><a class="nav-link" href="/login">Log In</a></li>
                         </ul>

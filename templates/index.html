@@ -1,9 +1,6 @@
-{% extends "layout.html" %}
-
-{% block title %}
-    Landing Page
-{% endblock %}
-
-{% block main %}
-    This is landing page
-{% endblock %}
+{% extends "layout.html" %} {% block title %} Home {% endblock %} {% block main
+%} {% with messages = get_flashed_messages() %} {% if messages %}
+<ul class="flashes">
+  {% for message in messages %} {% endfor %}
+</ul>
+{% endif %} {% endwith %} {% endblock %}

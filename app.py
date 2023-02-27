@@ -361,6 +361,37 @@ def users():
 def admin_profile():
     return apology("Bagian profile belum dikerjain?", 403)
 
+@app.route("/recipe/search", methods=["GET", "POST"])
+def recipe_search():
+    global search_result
+    if request.method == "GET":
+        ingredients = db.execute("select * from ingredients")
+        latest_recipes = db.execute("select recipes.id, recipes.name as recipe_name, recipes.image, recipes.description, recipe_ingredients.qty, instructions.instructions, units.name as unit_name from recipes inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id inner join units on recipe_ingredients.unit_id = units.id inner join instructions on recipes.id = instructions.recipe_id group by recipes.id order by recipes.created_at desc limit 4")
+        # global search_result
+        search_result.clear()
+        return render_template("search_recipes.html", ingredients=ingredients, latest_recipes=latest_recipes)
+    elif request.method == "POST":
+        if not request.form.get("ingredients"):
+            return apology("pilih dulu minimal 1 ingredients")
+        keywords = request.form.getlist("ingredients")
+        print(keywords)
+        where_clause = ""
+        for i in range(1, len(keywords)):
+            where_clause += " or recipe_ingredients.ingredients_id = " + keywords[i]
+        where_clause = "where recipe_ingredients.ingredients_id = " +keywords[0] + where_clause
+        print(where_clause)
+       
+        # results = list()
+        results = db.execute("select recipes.id, recipes.name as recipe_name, recipes.image, recipes.description, recipe_ingredients.qty, instructions.instructions, units.name as unit_name from recipes inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id inner join units on recipe_ingredients.unit_id = units.id inner join instructions on recipes.id = instructions.recipe_id "+ where_clause + " group by recipes.id")
+            # results.append(result)
+        print(results)
+        
+        search_result = results
+        prompt ="Here are some recipes for you!"
+        return render_template("search_result.html", results=results, prompt=prompt)
+
+
+
 @app.route("/dashboard", methods=["GET", "POST"])
 @login_required
 def user_dashboard():
@@ -408,6 +439,12 @@ def show_recipe(id):
     units = db.execute("select * from recipe_ingredients inner join units on recipe_ingredients.unit_id = units.id where recipe_id = ?", id)
     is_search = len(search_result)
     return render_template("show_recipe.html", is_search=is_search, results=search_result, recipe=recipe, ingredients=ingredients, instructions=instructions, units=units)
+
+@app.route("/recipe/show/all", methods=["GET", "POST"])
+def show_recipes():
+    if request.method == "GET":
+        recipes = db.execute("select recipes.id, recipes.name as recipe_name, recipes.image, recipes.description, recipe_ingredients.qty, instructions.instructions, units.name as unit_name from recipes inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id inner join units on recipe_ingredients.unit_id = units.id inner join instructions on recipes.id = instructions.recipe_id group by recipes.id order by recipes.created_at desc")
+        return render_template("show_recipes.html", recipes=recipes)
 
 
 @app.route('/', methods=["GET"])

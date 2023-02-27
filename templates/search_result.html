@@ -9,7 +9,11 @@ block main %} {% with messages = get_flashed_messages() %} {% if messages %}
     {% if results %}
     <h4 class="text-center" style="display: inline">{{ prompt }}</h4>
     <p class="my-3" style="display: inline">
+      {% if session["user_id"] %}
       <a href="/dashboard">Back to dashboard</a>
+      {% else %}
+      <a href="/">Back to home</a>
+      {% endif %}
     </p>
     {% endif %} {% for result in results %}
     <div class="col-md-6 mt-3">
