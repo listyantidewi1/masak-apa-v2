@@ -361,8 +361,49 @@ def recipe_edit(id):
         units = db.execute("select * from units")
         return render_template("/admin/edit_recipe.html", origins=origins, recipe=recipe, ingredients=ingredients, instruction=instruction, units=units)
     elif request.method == "POST":
-        return apology("")
+        if not request.form.get("name"):
+            return apology("")
+        elif not request.form.get("origin"):
+            return apology("")
 
+        name = request.form.get("name")
+        origin = request.form.get("origin")
+        description = request.form.get("description")
+        f = request.files['file']
+        if f.filename == '':
+            return apology("")
+        if f and allowed_file(f.filename):
+            filename = secure_filename(f.filename)
+            f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            db.execute("update recipes set name = ?, origin_id = ?, description = ?, image = ? where recipes.id = ?", name, origin, description, filename, id)
+        
+        ingredients = request.form.getlist("ingredients") #this will return a list / dictionary
+        print(ingredients)
+        while("" in ingredients):
+            ingredients.remove("")
+        # ingredients.remove('')
+        print(ingredients)
+            
+        quantities = request.form.getlist("quantity")
+        print(quantities)
+        while("" in quantities):
+            quantities.remove("")
+        # quantities.remove('')
+        print(quantities)
+
+        units = request.form.getlist("unit")
+        print(units)
+        while("" in units):
+            units.remove("")
+        # units.remove('')
+        print(units)
+
+        instruction = request.form.get("instruction")
+        db.execute("delete from recipe_ingredients where recipe_id = ?", id)
+        for (ingredient, quantity, unit) in zip(ingredients, quantities, units):
+            db.execute("insert into recipe_ingredients(recipe_id, ingredients_id, qty, unit_id) values(?,?,?,?)",id, ingredient, quantity, unit)
+        db.execute("update instructions set instructions = ? where recipe_id = ?", instruction, id)
+        return redirect('/admin/recipe/show/'+id)
 
 
 # TODO: delete recipe admin
