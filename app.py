@@ -361,6 +361,7 @@ def recipe_edit(id):
         units = db.execute("select * from units")
         return render_template("/admin/edit_recipe.html", origins=origins, recipe=recipe, ingredients=ingredients, instruction=instruction, units=units)
     elif request.method == "POST":
+        db.execute("delete from recipe_ingredients where recipe_id = ?", id)
         if not request.form.get("name"):
             return apology("")
         elif not request.form.get("origin"):
@@ -399,14 +400,22 @@ def recipe_edit(id):
         print(units)
 
         instruction = request.form.get("instruction")
-        db.execute("delete from recipe_ingredients where recipe_id = ?", id)
+
         for (ingredient, quantity, unit) in zip(ingredients, quantities, units):
             db.execute("insert into recipe_ingredients(recipe_id, ingredients_id, qty, unit_id) values(?,?,?,?)",id, ingredient, quantity, unit)
         db.execute("update instructions set instructions = ? where recipe_id = ?", instruction, id)
         return redirect('/admin/recipe/show/'+id)
 
-
+7
 # TODO: delete recipe admin
+@app.route("/admin/recipe/<id>/delete", methods=["GET"])
+@login_admin_required
+def recipe_delete(id):
+    db.execute("delete from recipe_ingredients where recipe_id=?", id)
+    db.execute("delete from instructions where recipe_id=?", id)
+    db.execute("delete from recipes where id=?", id)
+    return redirect("/admin/recipes")
+
 
 @app.route("/admin/users", methods=["GET"])
 @login_admin_required
