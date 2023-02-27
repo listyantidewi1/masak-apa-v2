@@ -60,7 +60,7 @@ def admin_dashboard():
     n_cat = db.execute("select count(id) as n_cat from categories")
     n_unit = db.execute("select count(id) as n_unit from units")
     name = db.execute("select name from users where id = ?", id)
-    return render_template("admin.html", users = n_users[0], recipes=n_recipes[0], ingredients = n_ingr[0], origins=n_ori[0], categories=n_cat[0], unit =n_unit[0], name=name[0])
+    return render_template("/admin/admin.html", users = n_users[0], recipes=n_recipes[0], ingredients = n_ingr[0], origins=n_ori[0], categories=n_cat[0], unit =n_unit[0], name=name[0])
 
 # @app.route("/admin/recipes", methods=["GET", "POST"])
 # @login_admin_required
@@ -72,7 +72,7 @@ def admin_dashboard():
 def units():
     if request.method == "GET":
         units = db.execute("select id, name from units")
-        return render_template("units.html", units = units)
+        return render_template("/admin/units.html", units = units)
     elif request.method == "POST":
         if not request.form.get("unit"):
             return apology("Unit belum diisi?", 400)
@@ -87,7 +87,7 @@ def units_edit(id):
     if request.method == "GET":
         unit = db.execute("select * from units where id = ?", id)[0]
         print(unit)
-        return render_template("units_edit.html", unit = unit)
+        return render_template("/admin/units_edit.html", unit = unit)
     elif request.method == "POST":
         unit = request.form.get("unit")
         print(unit)
@@ -109,7 +109,7 @@ def ingredients():
         listCat = db.execute("select * from categories")
         listOri = db.execute("select * from origins")
         ingredients = db.execute("select ingredients.id, image, name, origin, category, description from ingredients inner join origins on ingredients.origin_id = origins.id inner join categories on ingredients.category_id = categories.id")
-        return render_template("ingredients.html", ingredients = ingredients, listCats = listCat, listOris = listOri)
+        return render_template("/admin/ingredients.html", ingredients = ingredients, listCats = listCat, listOris = listOri)
     elif request.method == "POST":
         if not request.form.get("name"):
             return apology("name belum diisi")
@@ -144,7 +144,7 @@ def ingredients_edit(id):
         listOri = db.execute("select * from origins")
         ingredients = db.execute("select ingredients.id, image, name, origin, category, ingredients.description from ingredients inner join origins on ingredients.origin_id = origins.id inner join categories on ingredients.category_id = categories.id where ingredients.id = ?", id)[0]
         print(listCat, listOri, ingredients)
-        return render_template("ingredients_edit.html", ingredients = ingredients, listCats = listCat, listOris = listOri)
+        return render_template("/admin/ingredients_edit.html", ingredients = ingredients, listCats = listCat, listOris = listOri)
     elif request.method == "POST":
         if not request.form.get("name"):
             return apology("name belum diisi")
@@ -185,7 +185,7 @@ def ingredient_delete(id):
 def origins():
     if request.method=="GET":
         origins = db.execute("select id, origin from origins")
-        return render_template("origins.html", origins = origins)
+        return render_template("/admin/origins.html", origins = origins)
     elif request.method=="POST":
         if not request.form.get("origin"):
             return apology("origin belum diisi", 400)
@@ -201,7 +201,7 @@ def origins_edit(id):
     if request.method == "GET":
         origin = db.execute("select * from origins where id = ?", id)[0]
         print(origin)
-        return render_template("origins_edit.html", origins=origin)
+        return render_template("/admin/origins_edit.html", origins=origin)
     elif request.method == "POST":
         origin = request.form.get("origin")
         print(origin)
@@ -221,7 +221,7 @@ def origins_delete(id):
 def categories():
     if request.method=="GET":
         cat = db.execute("select id, category from categories")
-        return render_template("categories.html", categories=cat)
+        return render_template("/admin/categories.html", categories=cat)
     elif request.method=="POST":
         if not request.form.get("category"):
             return apology("Category belum diisi?", 400)
@@ -237,7 +237,7 @@ def categories_edit(id):
     if request.method == "GET":
         cat = db.execute("select * from categories where id = ?", id)[0]
         print(cat)
-        return render_template("categories_edit.html", categories=cat)
+        return render_template("/admin/categories_edit.html", categories=cat)
     elif request.method == "POST":
         category = request.form.get("category")
         print(category)
@@ -261,7 +261,7 @@ def add_recipes():
         # origins = db.execute("select id, origin from origins")
         # units = db.execute("select id, name from units")
         # return render_template("add_recipes_admin.html", ingredients = ingredients, origins = origins, units = units)
-        return render_template("add_recipes_admin.html", listOris = listOri)
+        return render_template("/admin/add_recipes_admin.html", listOris = listOri)
     elif request.method == 'POST':
         #get all data
         #execute queries in loops
@@ -287,7 +287,7 @@ def add_recipes():
             ingredients = db.execute("select * from ingredients")
             units = db.execute("select * from units")
 
-            return render_template("add_ingredients_instructions_admin.html", id = current_recipe_id, ingredients = ingredients, units = units)
+            return render_template("/admin/add_ingredients_instructions_admin.html", id = current_recipe_id, ingredients = ingredients, units = units)
         else:
             return apology("pilih file dulu")
 
@@ -298,7 +298,7 @@ def add_recipes_2(id):
     if request.method == "GET":
         ingredients = db.execute("SELECT * from ingredients")
         units = db.execute("select * from units")
-        return render_template('add_ingredients_instructions_admin.html', ingredients=ingredients, units=units, id=id)
+        return render_template('/admin/add_ingredients_instructions_admin.html', ingredients=ingredients, units=units, id=id)
     elif request.method == "POST":
         # if not request.form.get("ingredients"):
         #     return apology("choose at least one ingredient")
@@ -346,13 +346,13 @@ def show_recipe_admin(id):
     ingredients = db.execute("select * from recipe_ingredients inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id where recipe_id = ?", id)
     instructions = db.execute("select * from instructions where recipe_id = ?", id)[0]
     units = db.execute("select * from recipe_ingredients inner join units on recipe_ingredients.unit_id = units.id where recipe_id = ?", id)
-    return render_template("show_recipe_admin.html", recipe=recipe, ingredients=ingredients, instructions=instructions, units=units)# show a recipe detail
+    return render_template("/admin/show_recipe_admin.html", recipe=recipe, ingredients=ingredients, instructions=instructions, units=units)# show a recipe detail
 
 @app.route("/admin/users", methods=["GET"])
 @login_admin_required
 def users():
     users = db.execute("select id, name, username, email from users where role = 'member'")
-    return render_template("users.html", users = users)
+    return render_template("/admin/users.html", users = users)
 
     #return apology("Bagian users belum dikerjain?", 403)
 
