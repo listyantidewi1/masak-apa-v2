@@ -48,7 +48,7 @@ block main %} {% with messages = get_flashed_messages() %} {% if messages %}
           />
           <div class="card-body">
             <h5 class="card-title">{{ latest_recipe["recipe_name"] }}</h5>
-            <p class="card-text">{{ latest_recipe["description"] }}</p>
+            <p class="card-text">{{ latest_recipe["description"]|truncate(50) }}</p>
             <a href="/recipe/show/{{ latest_recipe['id'] }}" class="btn btn-primary">View More</a>
           </div>
         </div>

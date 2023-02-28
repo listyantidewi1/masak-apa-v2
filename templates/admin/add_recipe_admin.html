@@ -1,75 +1,48 @@
 {% extends "layout_admin.html" %} {% block title %} Add Ingredients and
 Instructions {% endblock %} {% block main %}
 <div class="container">
+  <h1 class="text-center mb-3">Add a new recipe</h1>
+  <form action="/admin/recipe/add" method="post" enctype="multipart/form-data">
+    <div class="form-group mb-3">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Recipe name"
+        name="name"
+      />
+    </div>
+    <div class="form-group mb-3">
+      <label for="origin">Recipe origin</label>
+      <select name="origin" id="origin" class="form-control">
+        {% for origin in origins %}
+        <option value="{{ origin['id'] }}">{{ origin["origin"] }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-group mb-3">
+      <label for="file">Add image</label>
+      <input type="file" class="form-control" name="file" />
+    </div>
+    <div class="form-group mb-3">
+      <textarea
+        class="form-control"
+        name="description"
+        placeholder="Enter recipe description"
+      ></textarea>
+    </div>
+    <div class="form-group mb-3">
+      <button class="btn btn-primary form-control" type="submit" value="submit">
+        Add
+      </button>
+    </div>
+  
+</div>
+<div class="container">
   <div class="row"></div>
 </div>
 <div class="container">
   <h1 class="text-center my-3">Add Ingredients and Instructions</h1>
-
-  <form
-    action="/admin/recipes/add/{{ id }}"
-    method="post"
-    enctype="multipart/form-data"
-  >
-    <!-- <div class="row">
-      <div class="col-md-3">
-        <div class="form-check mb-3">
-          {% for ingredient in ingredients %}
-          <input
-            type="checkbox"
-            name="ingredients"
-            id="ingredient"
-            value="{{ ingredient['id'] }}"
-            class="form-check-input mb-3"
-          />
-          <label class="form-check-label mb-3" for="ingredient">
-            {{ ingredient['name'] }}</label
-          ><br />
-          {% endfor %}
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="form-group mb-3">
-          {% for ingredient in ingredients %}
-          <input
-            class="form-control"
-            type="number"
-            name="quantity"
-            placeholder="Input quantity"
-          />
-          {% endfor %}
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="form-group mb-3">
-          {% for ingredient in ingredients %}
-          <select name="unit" id="unit" class="form-control">
-            <option value="none" selected disabled hidden>
-              Select an Option
-            </option>
-            {% for unit in units %}
-            <option class="form-control" value="{{ unit['id'] }}">
-              {{ unit['name'] }}
-            </option>
-            {% endfor %}
-          </select>
-          {% endfor %}
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="form-group mb-3">
-          <textarea name="instruction" class="form-control">
-Type recipe instructions here</textarea
-          >
-        </div>
-      </div>
-    </div> -->
-
-    <!-- <div class="form-group mb-3">
-      <button class="btn btn-primary form-control" type="submit" value="submit">
-        Add
-      </button>
-    </div> -->
+  
     <div class="row">
       <table class="table table-striped table-hover">
         <thead class="text-center">
