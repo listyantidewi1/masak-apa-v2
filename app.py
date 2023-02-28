@@ -108,7 +108,7 @@ def ingredients():
     if request.method == 'GET':
         listCat = db.execute("select * from categories")
         listOri = db.execute("select * from origins")
-        ingredients = db.execute("select ingredients.id, image, name, origin, category, description from ingredients inner join origins on ingredients.origin_id = origins.id inner join categories on ingredients.category_id = categories.id order by ingredients.name ASC")
+        ingredients = db.execute("select ingredients.id, image, name, origin, category, description from ingredients inner join origins on ingredients.origin_id = origins.id inner join categories on ingredients.category_id = categories.id")
         return render_template("/admin/ingredients.html", ingredients = ingredients, listCats = listCat, listOris = listOri)
     elif request.method == "POST":
         if not request.form.get("name"):
@@ -457,6 +457,9 @@ def recipe_search():
         results = db.execute("select recipes.id, recipes.name as recipe_name, recipes.image, recipes.description, recipe_ingredients.qty, instructions.instructions, units.name as unit_name from recipes inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id inner join units on recipe_ingredients.unit_id = units.id inner join instructions on recipes.id = instructions.recipe_id "+ where_clause + " group by recipes.id")
             # results.append(result)
         print(results)
+        if not results:
+            flash("No recipes found")
+            return redirect("/recipe/search")
         
         search_result = results
         prompt ="Here are some recipes for you!"
@@ -490,6 +493,9 @@ def user_dashboard():
         results = db.execute("select recipes.id, recipes.name as recipe_name, recipes.image, recipes.description, recipe_ingredients.qty, instructions.instructions, units.name as unit_name from recipes inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id inner join units on recipe_ingredients.unit_id = units.id inner join instructions on recipes.id = instructions.recipe_id "+ where_clause + " group by recipes.id")
             # results.append(result)
         print(results)
+        if not results:
+            flash("No recipes found")
+            return redirect("/dashboard")
         
         search_result = results
         prompt ="Here are some recipes for you!"

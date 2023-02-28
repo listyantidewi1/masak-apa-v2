@@ -20,7 +20,7 @@ block main %} {% with messages = get_flashed_messages() %} {% if messages %}
       <a href="/recipe/show/{{ result['id'] }}">
         <h3>{{ result['recipe_name'] }}</h3></a
       >
-      <p>{{ result['description'] }}</p>
+      <p>{{ result['description']|truncate(250) }}</p>
       <!-- {{ result }} -->
     </div>
     <div class="col-md-6 mt-3">

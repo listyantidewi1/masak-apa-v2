@@ -11,18 +11,50 @@ block main %} {% with messages = get_flashed_messages() %} {% if messages %}
     <h5 class="text-center mt-3">Tell us which ingredient(s) you have...</h5>
     <form action="/dashboard" method="post" enctype="multipart/form-data">
       <div class="col-md-12 mt-3">
-        {% for ingredient in ingredients %}
-        <input
-          type="checkbox"
-          name="ingredients"
-          id="ingredient"
-          value="{{ ingredient['id'] }}"
-          class="form-check-input mb-2"
-        />
-        <label class="form-check-label" for="ingredient">
-          {{ ingredient['name'] }}</label
-        >
-        {% endfor %}
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr></tr>
+          </tbody>
+        </table>
+
+        <div style="display: flex; flex-wrap: wrap">
+          {% for ingredient in ingredients %}
+          <div
+            style="
+              background-color: khaki;
+              margin: 1px 1px 1px 1px;
+              padding: 1px;
+              border-radius: 15%;
+            "
+          >
+            <input
+              type="checkbox"
+              name="ingredients"
+              id="ingredient"
+              value="{{ ingredient['id'] }}"
+              class="form-check-input mb-2"
+            /><span> &nbsp;</span>
+            <label class="form-check-label" for="ingredient">
+              {{ ingredient['name'] }}</label
+            >&nbsp;
+          </div>
+          {% endfor %}
+        </div>
       </div>
       <div class="form-group mt-3">
         <button
@@ -48,8 +80,14 @@ block main %} {% with messages = get_flashed_messages() %} {% if messages %}
           />
           <div class="card-body">
             <h5 class="card-title">{{ latest_recipe["recipe_name"] }}</h5>
-            <p class="card-text">{{ latest_recipe["description"]|truncate(50) }}</p>
-            <a href="/recipe/show/{{ latest_recipe['id'] }}" class="btn btn-primary">View More</a>
+            <p class="card-text">
+              {{ latest_recipe["description"]|truncate(100) }}
+            </p>
+            <a
+              href="/recipe/show/{{ latest_recipe['id'] }}"
+              class="btn btn-primary"
+              >View More</a
+            >
           </div>
         </div>
       </div>
