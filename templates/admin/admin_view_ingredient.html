@@ -1,0 +1,19 @@
+{% extends "layout_admin.html" %} {% block title %} {{ ingredient['name'] }} {%
+endblock %} {% block main %}
+<div class="container">
+  <h1 class="text-center my-4">{{ ingredient["name"] }}</h1>
+  <div class="row">
+    <div class="col-md-6">
+      <img
+        src="/static/uploads/{{ ingredient['image'] }}"
+        style="width: 100%; height: auto"
+      />
+    </div>
+    <div class="col-md-6">
+      <h6 class="my-3">Origin: {{ origin["origin"] }}</h6>
+      <p>{{ ingredient["description"] }}</p>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

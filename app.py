@@ -38,16 +38,27 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
-@app.route("/member/add")
+@app.route("/add")
 @login_required
 def add():
     return apology("Member dashboard beum dikerjain?", 403)
 
-@app.route("/member/profile")
+@app.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
-    return apology("Member dashboard beum dikerjain?", 403)
-
+    id = session["user_id"]
+    if request.method == "GET":
+        user = db.execute("select * from users where id = ?", id)[0]
+        return render_template("profile.html", id=id, user=user)
+    elif request.method == "POST":
+        password = request.form.get("password")
+        confirmation = request.form.get("confirmation")
+        hash = generate_password_hash(password)
+        if password == confirmation:
+            db.execute("update users set password=? where id = ?", hash, id)
+            flash("Profile updated")
+            return redirect("/profile")
+                       
 @app.route("/admin")
 @login_admin_required
 def admin_dashboard():
@@ -135,6 +146,13 @@ def ingredients():
             return redirect("/admin/ingredients")
         else:
             return apology("pilih file dulu")
+
+@app.route("/admin/ingredients/<id>/view", methods=["GET"])
+@login_admin_required
+def admin_view_ingredient(id):
+    ingredient = db.execute("select * from ingredients where id = ?",id)[0]
+    origin = db.execute("select origin from origins inner join ingredients on origins.id = ingredients.origin_id where ingredients.id = ?", id)[0]
+    return render_template("/admin/admin_view_ingredient.html", ingredient=ingredient, origin=origin)
 
 @app.route("/admin/ingredients/<id>/edit", methods=["GET", "POST"])
 @login_admin_required
@@ -344,13 +362,15 @@ def add_recipes_2():
 @login_admin_required
 def show_recipe_admin(id):
     recipe = db.execute("select * from recipes where id = ?", id)[0]
-    print(recipe)
+    # print(recipe)
     ingredients = db.execute("select * from recipe_ingredients inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id where recipe_id = ?", id)
     instructions = db.execute("select * from instructions where recipe_id = ?", id)[0]
-    units = db.execute("select * from recipe_ingredients inner join units on recipe_ingredients.unit_id = units.id where recipe_id = ?", id)[0]
+    units = db.execute("select units.name from units inner join recipe_ingredients on units.id = recipe_ingredients.unit_id where recipe_id = ?", id)
+    # print(units)
     origin = db.execute("select origins.origin from origins inner join recipes on origins.id = recipes.origin_id where recipes.id = ?", id)[0]
-    print(origin)
-    return render_template("/admin/show_recipe_admin.html", recipe=recipe, ingredients=ingredients, instructions=instructions, units=units, origin=origin)# show a recipe detail
+    print(units)
+    full_recipe = db.execute("select recipes.name as recipename, recipes.description, recipes.image, origins.origin, recipe_ingredients.qty, instructions.instructions, units.name as unitname, ingredients.name as ingredientname from recipes inner join origins on recipes.origin_id = origins.id inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join instructions on recipes.id = instructions.recipe_id inner join units on recipe_ingredients.unit_id = units.id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id where recipes.id = ?", id)
+    return render_template("/admin/show_recipe_admin.html", recipe=recipe, ingredients=ingredients, instructions=instructions, units=units, origin=origin, full_recipe=full_recipe)# show a recipe detail
 
 # TODO: edit recipe admin
 @app.route("/admin/recipe/<id>/edit", methods=["GET","POST"])
@@ -509,14 +529,16 @@ def show_search_results():
 @app.route("/recipe/show/<id>", methods=["GET"])
 def show_recipe(id):
     recipe = db.execute("select * from recipes where id = ?", id)[0]
-    print(recipe)
+    # print(recipe)
     ingredients = db.execute("select * from recipe_ingredients inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id where recipe_id = ?", id)
+    # print(ingredients)
     instructions = db.execute("select * from instructions where recipe_id = ?", id)[0]
-    units = db.execute("select * from recipe_ingredients inner join units on recipe_ingredients.unit_id = units.id where recipe_id = ?", id)[0]
+    units = db.execute("select units.name from units inner join recipe_ingredients on units.id = recipe_ingredients.unit_id where recipe_id = ?", id)
     origin = db.execute("select origins.origin from origins inner join recipes on origins.id = recipes.origin_id where recipes.id = ?", id)[0]
-    print(origin)
+    full_recipe = db.execute("select recipes.name as recipename, recipes.description, recipes.image, origins.origin, recipe_ingredients.qty, instructions.instructions, units.name as unitname, ingredients.name as ingredientname from recipes inner join origins on recipes.origin_id = origins.id inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join instructions on recipes.id = instructions.recipe_id inner join units on recipe_ingredients.unit_id = units.id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id where recipes.id = ?", id)
+    print(units)
     is_search = len(search_result)
-    return render_template("show_recipe.html", is_search=is_search, results=search_result, recipe=recipe, ingredients=ingredients, instructions=instructions, units=units, origin = origin)
+    return render_template("show_recipe.html", is_search=is_search, results=search_result, recipe=recipe, ingredients=ingredients, instructions=instructions, units=units, origin = origin, full_recipe = full_recipe)
 
 @app.route("/recipe/show/all", methods=["GET", "POST"])
 def show_recipes():

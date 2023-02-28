@@ -64,7 +64,7 @@
         <th>Origin</th>
         <th>Category</th>
         <th>Image</th>
-        <th>Description</th>
+        <th>View Ingredient</th>
         <th>Action</th>
       </tr>
     </thead>
@@ -79,7 +79,13 @@
         <td>
           <a href="/static/uploads/{{ ingredient['image'] }}">View Image</a>
         </td>
-        <td><a href="/ingredient/description/{{ ingredient['id'] }}">View Description</a></td>
+        <td>
+          <a
+            href="/admin/ingredients/{{ ingredient['id'] }}/view"
+            class="btn btn-info"
+            >View Ingredient</a
+          >
+        </td>
         <td>
           <a
             href="/admin/ingredients/{{ ingredient['id'] }}/edit"

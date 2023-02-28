@@ -26,11 +26,11 @@ endblock %} {% block main %}
           </tr>
         </thead>
         <tbody>
-          {% for ingredient in ingredients %}
+          {% for full_recipe in full_recipe %}
           <tr>
-            <td>{{ ingredient['name'] }}</td>
-            <td>{{ ingredient['qty'] }}</td>
-            <td>{{ units['name'] }}</td>
+            <td>{{ full_recipe['ingredientname'] }}</td>
+            <td>{{ full_recipe['qty'] }}</td>
+            <td>{{ full_recipe['unitname'] }}</td>
           </tr>
           {% endfor %}
         </tbody>
