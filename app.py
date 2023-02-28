@@ -26,6 +26,7 @@ db = SQL("sqlite:///masakapa.sqlite")
 
 search_result = []
 
+# specify the list of allowed file extensions to be uploaded
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -38,11 +39,13 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
+# submit a new recipe for member
 @app.route("/add")
 @login_required
 def add():
-    return apology("Member dashboard beum dikerjain?", 403)
+    return apology("Haven't implemented yet?", 403)
 
+# change password for member
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
@@ -58,7 +61,8 @@ def profile():
             db.execute("update users set password=? where id = ?", hash, id)
             flash("Profile updated")
             return redirect("/profile")
-                       
+
+# admin dashboard                       
 @app.route("/admin")
 @login_admin_required
 def admin_dashboard():
@@ -73,10 +77,6 @@ def admin_dashboard():
     name = db.execute("select name from users where id = ?", id)
     return render_template("/admin/admin.html", users = n_users[0], recipes=n_recipes[0], ingredients = n_ingr[0], origins=n_ori[0], categories=n_cat[0], unit =n_unit[0], name=name[0])
 
-# @app.route("/admin/recipes", methods=["GET", "POST"])
-# @login_admin_required
-# def recipes():
-#     return apology("Admin dashboard belum dikerjain?", 403)
 
 @app.route("/admin/units", methods=["GET", "POST"])
 @login_admin_required

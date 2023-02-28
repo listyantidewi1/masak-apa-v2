@@ -52,7 +52,18 @@
   </form>
 </div>
 <hr />
-
+<!-- <div class="container">
+  <input autocomplete="off" autofocus placeholder="Query" type="search" id="search" />
+  <ul></ul>
+  <script>
+    let input = document.getElementById("search");
+    input.addEventListener("search", async function () {
+      let response = await fetch("/admin/ingredients?q=" + input.value);
+      let shows = await response.text();
+      document.querySelector("ul").innerHTML = shows;
+    });
+  </script>
+</div> -->
 <div class="container-sm mt-3">
   <h2 class="text-center">List of Ingredients</h2>
   <div class="mb-5"></div>
