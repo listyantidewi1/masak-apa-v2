@@ -108,7 +108,7 @@ def ingredients():
     if request.method == 'GET':
         listCat = db.execute("select * from categories")
         listOri = db.execute("select * from origins")
-        ingredients = db.execute("select ingredients.id, image, name, origin, category, description from ingredients inner join origins on ingredients.origin_id = origins.id inner join categories on ingredients.category_id = categories.id")
+        ingredients = db.execute("select ingredients.id, image, name, origin, category, description from ingredients inner join origins on ingredients.origin_id = origins.id inner join categories on ingredients.category_id = categories.id order by ingredients.name ASC")
         return render_template("/admin/ingredients.html", ingredients = ingredients, listCats = listCat, listOris = listOri)
     elif request.method == "POST":
         if not request.form.get("name"):
@@ -166,7 +166,7 @@ def ingredients_edit(id):
             filename = secure_filename(f.filename)
             f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         #f.save(secure_filename(f.filename))
-            db.execute("update ingredients set image = ?, name = ?, origin_id = ?, category_id = ?, description = ? where id = ?", '/workspaces/89518378/final-project/masak-apa/static/uploads/' + filename, name, origin, category, description, id)
+            db.execute("update ingredients set image = ?, name = ?, origin_id = ?, category_id = ?, description = ? where id = ?", filename, name, origin, category, description, id)
             flash("The ingredient has been sucessfully edited")
             return redirect("/admin/ingredients")
         else:
@@ -299,8 +299,8 @@ def add_recipes():
 def add_recipes_2(id):
     print(id)
     if request.method == "GET":
-        ingredients = db.execute("SELECT * from ingredients")
-        units = db.execute("select * from units")
+        ingredients = db.execute("SELECT * from ingredients order by name ASC")
+        units = db.execute("select * from units order by name ASC")
         recipe = db.execute("select * from recipes where id = ?", id)[0]
         return render_template('/admin/add_ingredients_instructions_admin.html', ingredients=ingredients, units=units, id=id, recipe=recipe)
     elif request.method == "POST":

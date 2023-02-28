@@ -1,26 +1,84 @@
-{% extends "layout.html" %}
+{% extends "layout.html" %} {% block title %} {% endblock %} {% block main %}
+<div class="container col-xl-10 col-xxl-8 px-4 py-1">
+  <div class="row align-items-center g-lg-5">
+    <div class="col-lg-7 text-center text-lg-start">
+      <h1 class="display-4 fw-bold lh-1 mb-3 text-shadow-1">
+        Signup to access our features
+      </h1>
+      <p class="col-lg-10 fs-4">Get access to Indonesian Tradional Food</p>
+    </div>
+    <div class="col-md-10 mx-auto col-lg-5">
+      <form
+        class="p-4 p-md-5 border rounded-3 bg-light"
+        action="/register"
+        method="POST"
+      >
+        <div class="form-floating mb-3">
+          <input
+            type="email"
+            class="form-control form-control-dark"
+            id="email"
+            name="email"
+            placeholder="name@example.com"
+          />
+          <label for="floatingInput">Email address</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input
+            type="text"
+            class="form-control form-control-dark"
+            id="username"
+            name="name"
+            placeholder="username"
+          />
+          <label for="floatingInput">Name</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input
+            type="text"
+            class="form-control form-control-dark"
+            id="username"
+            name="username"
+            placeholder="username"
+          />
+          <label for="floatingInput">Username</label>
+        </div>
 
-{% block title %}
-    Register
-{% endblock %}
+        <div class="form-floating mb-3">
+          <input
+            type="password"
+            class="form-control form-control-dark"
+            id="password"
+            placeholder="Password"
+            name="password"
+          />
+          <label for="floatingPassword">Password</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input
+            type="password"
+            class="form-control form-control-dark"
+            id="password"
+            placeholder="Password"
+            name="confirmation"
+          />
+          <label for="floatingPassword">Repeat Password</label>
+        </div>
+        <div class="checkbox mb-3">
+          <label>
+            <input type="checkbox" value="remember-me" /> Remember me
+          </label>
+        </div>
+        <button class="w-100 btn btn-lg btn-primary" type="submit">
+          Sign up
+        </button>
+        <hr class="my-4" />
+        <small class="text-muted"
+          >By clicking Sign up, you agree to the terms of use.</small
+        >
+      </form>
+    </div>
+  </div>
+</div>
 
-{% block main %}
-    <form action="/register" method="post">
-        <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="name" name="name" placeholder="Name" type="text">
-        </div>
-        <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username" name="username" placeholder="Username" type="text">
-        </div>
-        <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="email" name="email" placeholder="Email" type="email">
-        </div>
-        <div class="mb-3">
-            <input class="form-control mx-auto w-auto" id="password" name="password" placeholder="Password" type="password">
-        </div>
-        <div class="mb-3">
-            <input class="form-control mx-auto w-auto" id="confirmation" name="confirmation" placeholder="Repeat Password" type="password">
-        </div>
-        <button class="btn btn-primary" type="submit">Register</button>
-    </form>
 {% endblock %}
