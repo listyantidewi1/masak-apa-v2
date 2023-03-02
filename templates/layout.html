@@ -25,20 +25,23 @@
     <!-- https://favicon.io/emoji-favicons/money-bag/ -->
     <!-- <link href="/static/favicon.ico" rel="icon"> -->
 
-    <link href="/static/styles.css" rel="stylesheet" />
+    <link href="/static/style.css" rel="stylesheet" />
 
     <title>Masak Apa? {% block title %}{% endblock %}</title>
   </head>
 
-  <body>
-    <nav class="bg-dark border navbar navbar-expand-md navbar-dark p-3">
+  <body class="bg-img">
+    <nav
+      id="navbar"
+      class="border navbar navbar-expand-lg navbar-scroll navbar-light p-3 shadow-5-strong"
+    >
       <div class="container-fluid">
         <a
-          style="font-family: 'Barrio'; font-size: 50px"
+          style="font-family: 'Barrio'; font-size: 25px"
           class="navbar-brand"
           href="/"
         >
-          <img src="/static/img/spoon-and-fork.png" style="width: 20%" />
+          <img src="/static/img/spoon-and-fork.png" style="width: 10%" />
           <span class="blue text-primary">M</span
           ><span class="red text-danger">A</span
           ><span class="yellow text-warning">S</span
@@ -46,86 +49,12 @@
           ><span class="BLACK text-info">K</span>
           <span class="text-muted">Apa?</span></a
         >
-        <!-- <button
-          aria-controls="navbar"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-          class="navbar-toggler"
-          data-bs-target="#navbar"
-          data-bs-toggle="collapse"
-          type="button"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button> -->
-        <!-- <div class="collapse navbar-collapse" id="navbar">
-          {% if session["user_id"] %}
-          <ul class="navbar-nav me-auto mt-2">
-            <li class="nav-item">
-              <a class="nav-link" href="/dashboard">Dashboard</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/recipe/show/all">Browse Recipe</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/add">Submit Recipe</a>
-            </li> -->
-        <!-- <li class="nav-item">
-              <a class="nav-link" href="/profile">Profile</a>
-            </li>
-          </ul>
-          <ul class="navbar-nav ms-auto mt-2">
-            <li class="nav-item">
-              <a class="nav-link" href="/logout">Log Out</a>
-            </li>
-          </ul>
-          {% else %}
-          <ul class="navbar-nav ms-auto mt-2">
-            <li class="nav-item">
-              <a class="nav-link" href="/recipe/show/all">Browse Recipe</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/recipe/search">Search Recipes</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/register">Register</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/login">Log In</a>
-            </li>
-          </ul>
-          {% endif %}
-        </div> -->
-        <ul class="navbar nav ms-auto mt-2">
-          <li class="nav-item">
-            <!-- <img
-              src="/static/img/masakapa-transformed.png"
-              style="width: 30%"
-            /> -->
-          </li>
-        </ul>
-      </div>
-    </nav>
 
-    <nav class="bg-light border navbar navbar-expand-md navbar-light p-2">
-      <div class="container-fluid">
-        <!-- <a
-          style="font-family: 'Barrio'; font-size: 50px"
-          class="navbar-brand"
-          href="/"
-        > -->
-        <!-- <img src="/static/img/spoon-and-fork.png" style="width: 20%" />
-          <span class="blue text-primary">M</span
-          ><span class="red text-danger">A</span
-          ><span class="yellow text-warning">S</span
-          ><span class="green text-success">A</span
-          ><span class="BLACK text-info">K</span>
-          <span class="text-muted">Apa?</span></a
-        > -->
         <button
           aria-controls="navbar"
           aria-expanded="false"
           aria-label="Toggle navigation"
-          class="navbar-toggler"
+          class="navbar-toggler ps-0"
           data-bs-target="#navbar"
           data-bs-toggle="collapse"
           type="button"
@@ -141,9 +70,9 @@
             <li class="nav-item">
               <a class="nav-link" href="/recipe/show/all">Browse Recipe</a>
             </li>
-            <!-- <li class="nav-item">
+            <li class="nav-item">
               <a class="nav-link" href="/add">Submit Recipe</a>
-            </li> -->
+            </li>
             <li class="nav-item">
               <a class="nav-link" href="/profile">Profile</a>
             </li>
@@ -172,6 +101,23 @@
         </div>
       </div>
     </nav>
+    <!-- <script type="text/javascript">
+      window.onscroll = function () {
+        scrollFunction();
+      };
+
+      function scrollFunction() {
+        if (
+          document.body.scrollTop > 20 ||
+          document.documentElement.scrollTop > 20
+        ) {
+          document.getElementById("navbar").style.background = "#501e27";
+          document.getElementById("navbar").style.color = "white";
+        } else {
+          document.getElementById("navbar").style.background = "none";
+        }
+      }
+    </script> -->
 
     {% if get_flashed_messages() %}
     <header>
@@ -181,8 +127,8 @@
     </header>
     {% endif %}
 
-    <main class="container-fluid py-5 text-center">
-      {% block main %}{% endblock %}
+    <main class="container-fluid mt-5">
+      <div style="margin-top: 2%">{% block main %}{% endblock %}</div>
     </main>
 
     <footer class="mb-0 p-5 small text-center text-muted bg-dark">

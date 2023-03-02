@@ -11,27 +11,6 @@ block main %} {% with messages = get_flashed_messages() %} {% if messages %}
     <h5 class="text-center mt-3">Tell us which ingredient(s) you have...</h5>
     <form action="/dashboard" method="post" enctype="multipart/form-data">
       <div class="col-md-12 mt-3">
-        <table class="table table-striped table-hover">
-          <thead>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-          </thead>
-          <tbody>
-            <tr></tr>
-          </tbody>
-        </table>
-
         <div style="display: flex; flex-wrap: wrap">
           {% for ingredient in ingredients %}
           <div
@@ -45,7 +24,7 @@ block main %} {% with messages = get_flashed_messages() %} {% if messages %}
             <input
               type="checkbox"
               name="ingredients"
-              id="ingredient"
+              id="{{ ingredient['name'] }}t"
               value="{{ ingredient['id'] }}"
               class="form-check-input mb-2"
             /><span> &nbsp;</span>

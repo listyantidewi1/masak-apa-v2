@@ -1,6 +1,36 @@
-{% extends "layout.html" %} {% block title %} Home {% endblock %} {% block main
+{% extends "landing.html" %} {% block title %} Home {% endblock %} {% block main
 %} {% with messages = get_flashed_messages() %} {% if messages %}
 <ul class="flashes">
   {% for message in messages %} {% endfor %}
 </ul>
-{% endif %} {% endwith %} {% endblock %}
+
+{% endif %} {% endwith %}
+<div class="container-lg mt-3">
+  <h2>Latest Recipes</h2>
+  <div class="row mt-2">
+    {% for latest_recipe in latest_recipes %}
+    <div class="col-lg-3 mt-2">
+      <div class="card" style="width: 100%">
+        <img
+          src="/static/uploads/{{ latest_recipe['image'] }}"
+          class="card-img-top card-size"
+          alt="IoT course thumbnail"
+        />
+        <div class="card-body">
+          <h5 class="card-title">{{ latest_recipe["recipe_name"] }}</h5>
+          <p class="card-text">
+            {{ latest_recipe["description"]|truncate(100) }}
+          </p>
+          <a
+            href="/recipe/show/{{ latest_recipe['id'] }}"
+            class="btn btn-primary"
+            >View More</a
+          >
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="spacing p-4"></div>
+</div>
+{% endblock %}

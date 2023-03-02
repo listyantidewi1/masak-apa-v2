@@ -12,8 +12,8 @@
     <form action="/recipe/search" method="post" enctype="multipart/form-data">
       <div class="col-md-12 mt-3">
         <div style="display: flex; flex-wrap: wrap">
-        {% for ingredient in ingredients %}
-        <div
+          {% for ingredient in ingredients %}
+          <div
             style="
               background-color: khaki;
               margin: 1px 1px 1px 1px;
@@ -21,20 +21,20 @@
               border-radius: 15%;
             "
           >
-          <input
-            type="checkbox"
-            name="ingredients"
-            id="ingredient"
-            value="{{ ingredient['id'] }}"
-            class="form-check-input mb-2"
-          />
-          <label class="form-check-label" for="ingredient">
-            {{ ingredient['name'] }}</label
-          >
-        </div>
+            <input
+              type="checkbox"
+              name="ingredients"
+              id="{{ ingredient['name'] }}"
+              value="{{ ingredient['id'] }}"
+              class="form-check-input mb-2"
+            />
+            <label class="form-check-label" for="ingredient">
+              {{ ingredient['name'] }}</label
+            >
+          </div>
 
-        {% endfor %}
-      </div>
+          {% endfor %}
+        </div>
       </div>
       <div class="form-group mt-3">
         <button
@@ -47,6 +47,8 @@
       </div>
     </form>
   </div>
+  <div class="my-3"></div>
+  <hr />
   <div class="container-lg mt-3">
     <h2>Latest Recipes</h2>
     <div class="row mt-2">

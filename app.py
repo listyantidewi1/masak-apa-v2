@@ -551,7 +551,8 @@ def show_recipes():
 
 @app.route('/', methods=["GET"])
 def landingpage():
-    return render_template("index.html")
+    latest_recipes = db.execute("select recipes.id, recipes.name as recipe_name, recipes.image, recipes.description, recipe_ingredients.qty, instructions.instructions, units.name as unit_name from recipes inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id inner join units on recipe_ingredients.unit_id = units.id inner join instructions on recipes.id = instructions.recipe_id group by recipes.id order by recipes.created_at desc limit 4")
+    return render_template("index.html", latest_recipes=latest_recipes)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():

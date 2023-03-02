@@ -1,6 +1,27 @@
 /* Size for brand */
+.navbar {
+  /* position: fixed; */
+  transition: 1s;
+}
+
 nav .navbar-brand {
   font-size: xx-large;
+}
+
+.nav li:after {
+  content: "";
+  display: block;
+  border-bottom: 2px solid #38fd07;
+  transform: scaleX(0);
+  transition: 0.2s ease-in-out;
+}
+
+.nav li:hover:after {
+  transform: scaleX(1);
+}
+
+.para {
+  min-height: 500px;
 }
 
 /* Colors for brand */
@@ -17,6 +38,29 @@ nav .navbar-brand .green {
   color: #2e944b;
 }
 
+/* Color of the links BEFORE scroll */
+.navbar-scroll .nav-link,
+.navbar-scroll .navbar-toggler .fa-bars {
+  color: #fff;
+}
+
+/* Color of the links AFTER scroll */
+.navbar-scrolled .nav-link,
+.navbar-scrolled .navbar-toggler .fa-bars {
+  color: #4f4f4f;
+}
+
+/* Color of the navbar AFTER scroll */
+.navbar-scrolled {
+  background-color: #fff;
+}
+
+/* An optional height of the navbar AFTER scroll */
+.navbar.navbar-scroll.navbar-scrolled {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
 .form-control-dark {
   border-color: var(--bs-gray);
 }
@@ -26,11 +70,24 @@ nav .navbar-brand .green {
   box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25);
 }
 
-/* .bg-img{
-    background-image: url('images/bg-header.png');
-    height: 50vh;
-  } */
+.bg-img {
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  object-fit: fill;
+}
 
+.bg-img::after {
+  background: url("/static/img/bg1.jpeg") no-repeat center center fixed;
+  opacity: 0.5;
+}
+
+/* .bg-container {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
+  
+} */
 .text-small {
   font-size: 85%;
 }
@@ -77,3 +134,6 @@ nav .navbar-brand .green {
   background-color: blueviolet;
 } */
 
+.rounded-img {
+  border-radius: 8px;
+}
