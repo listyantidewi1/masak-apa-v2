@@ -5,15 +5,14 @@ block main %} {% with messages = get_flashed_messages() %} {% if messages %}
 </ul>
 {% endif %} {% endwith %}
 <div
-  class="bg-warning p-2"
+  class="bg-success p-2 text-muted"
   style="
     --bs-bg-opacity: 0.1;
-    border: 0.5px solid tomato;
     border-radius: 5px;
-    box-shadow: 10px 10px 15px tomato;
+    box-shadow: 10px 10px 10px grey;
   "
 >
-  <h1 class="text-center">Howdy! {{ name['name'] }}</h1>
+  <p class="display-2 text-center">Howdy! {{ name['name'] }}</p>
 </div>
 
 <div class="container mt-5">
@@ -57,7 +56,7 @@ block main %} {% with messages = get_flashed_messages() %} {% if messages %}
       </div>
     </form>
   </div>
-  <div class="container-lg mt-3">
+  <div class="container-lg mt-5">
     <h2>Latest Recipes</h2>
     <div class="row mt-2">
       {% for latest_recipe in latest_recipes %}

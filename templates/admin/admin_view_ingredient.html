@@ -8,6 +8,7 @@ endblock %} {% block main %}
         src="/static/uploads/{{ ingredient['image'] }}"
         style="width: 100%; height: auto"
       />
+      <p>Image source: {{ ingredient['img_src'] }}</p>
     </div>
     <div class="col-md-6">
       <h6 class="my-3">Origin: {{ origin["origin"] }}</h6>

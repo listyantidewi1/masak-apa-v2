@@ -133,6 +133,7 @@ def ingredients():
         name = request.form.get("name")
         origin = request.form.get("origin")
         category = request.form.get("category")
+        img_src = request.form.get("img_src")
         f = request.files['file']
         print(f)
         if f.filename == '':
@@ -142,7 +143,7 @@ def ingredients():
             filename = secure_filename(f.filename)
             f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         #f.save(secure_filename(f.filename))
-            db.execute("insert into ingredients(image, name, origin_id, category_id, description) values(?,?,?,?,?)", filename, name, origin, category, description)
+            db.execute("insert into ingredients(image, name, origin_id, category_id, description, img_src) values(?,?,?,?,?,?)", filename, name, origin, category, description, img_src)
             return redirect("/admin/ingredients")
         else:
             return apology("pilih file dulu")
@@ -336,13 +337,15 @@ def add_recipes_2():
         name = request.form.get("name")
         origin = request.form.get("origin")
         description = request.form.get("description")
+        img_src = request.form.get("img_src")
+        recipe_src = request.form.get("recipe_src")
         f = request.files['file']
         if f.filename == '':
             return apology("No selected file")
         if f and allowed_file(f.filename):
             filename = secure_filename(f.filename)
             f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            db.execute("insert into recipes(name, origin_id, image, description) values(?,?,?,?)", name, origin, filename, description)
+            db.execute("insert into recipes(name, origin_id, image, description, img_src, recipe_src) values(?,?,?,?,?,?)", name, origin, filename, description, img_src, recipe_src)
             current_recipe = db.execute("select id from recipes order by id desc limit 1")[0]
             print(current_recipe['id'])
             current_recipe_id = str(current_recipe['id'])
@@ -369,8 +372,9 @@ def show_recipe_admin(id):
     # print(units)
     origin = db.execute("select origins.origin from origins inner join recipes on origins.id = recipes.origin_id where recipes.id = ?", id)[0]
     print(units)
-    full_recipe = db.execute("select recipes.name as recipename, recipes.description, recipes.image, origins.origin, recipe_ingredients.qty, instructions.instructions, units.name as unitname, ingredients.name as ingredientname from recipes inner join origins on recipes.origin_id = origins.id inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join instructions on recipes.id = instructions.recipe_id inner join units on recipe_ingredients.unit_id = units.id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id where recipes.id = ?", id)
-    return render_template("/admin/show_recipe_admin.html", recipe=recipe, ingredients=ingredients, instructions=instructions, units=units, origin=origin, full_recipe=full_recipe)# show a recipe detail
+    full_recipe = db.execute("select recipes.name as recipename, recipes.description, recipes.image, recipes.recipe_src, recipes.img_src as imgsrc, origins.origin, recipe_ingredients.qty, instructions.instructions, units.name as unitname, ingredients.name as ingredientname from recipes inner join origins on recipes.origin_id = origins.id inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join instructions on recipes.id = instructions.recipe_id inner join units on recipe_ingredients.unit_id = units.id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id where recipes.id = ?", id)
+    source = db.execute("select img_src, recipe_src from recipes where id = ?",id)[0]
+    return render_template("/admin/show_recipe_admin.html", recipe=recipe, ingredients=ingredients, instructions=instructions, units=units, origin=origin, full_recipe=full_recipe, source=source)# show a recipe detail
 
 # TODO: edit recipe admin
 @app.route("/admin/recipe/<id>/edit", methods=["GET","POST"])
@@ -535,10 +539,11 @@ def show_recipe(id):
     instructions = db.execute("select * from instructions where recipe_id = ?", id)[0]
     units = db.execute("select units.name from units inner join recipe_ingredients on units.id = recipe_ingredients.unit_id where recipe_id = ?", id)
     origin = db.execute("select origins.origin from origins inner join recipes on origins.id = recipes.origin_id where recipes.id = ?", id)[0]
-    full_recipe = db.execute("select recipes.name as recipename, recipes.description, recipes.image, origins.origin, recipe_ingredients.qty, instructions.instructions, units.name as unitname, ingredients.name as ingredientname from recipes inner join origins on recipes.origin_id = origins.id inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join instructions on recipes.id = instructions.recipe_id inner join units on recipe_ingredients.unit_id = units.id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id where recipes.id = ?", id)
+    full_recipe = db.execute("select recipes.name as recipename, recipes.description, recipes.image, recipes.img_src as imgsrc, recipes.recipe_src, origins.origin, recipe_ingredients.qty, instructions.instructions, units.name as unitname, ingredients.name as ingredientname from recipes inner join origins on recipes.origin_id = origins.id inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join instructions on recipes.id = instructions.recipe_id inner join units on recipe_ingredients.unit_id = units.id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id where recipes.id = ?", id)
+    source = db.execute("select img_src, recipe_src from recipes where id = ?",id)[0]
     print(units)
     is_search = len(search_result)
-    return render_template("show_recipe.html", is_search=is_search, results=search_result, recipe=recipe, ingredients=ingredients, instructions=instructions, units=units, origin = origin, full_recipe = full_recipe)
+    return render_template("show_recipe.html", is_search=is_search, results=search_result, recipe=recipe, ingredients=ingredients, instructions=instructions, units=units, origin = origin, full_recipe = full_recipe, source = source)
 
 @app.route("/recipe/show/all", methods=["GET", "POST"])
 def show_recipes():
