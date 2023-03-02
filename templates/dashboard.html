@@ -4,7 +4,18 @@ block main %} {% with messages = get_flashed_messages() %} {% if messages %}
   {% for message in messages %} {% endfor %}
 </ul>
 {% endif %} {% endwith %}
-<h1 class="text-center">Howdy! {{ name['name'] }}</h1>
+<div
+  class="bg-warning p-2"
+  style="
+    --bs-bg-opacity: 0.1;
+    border: 0.5px solid tomato;
+    border-radius: 5px;
+    box-shadow: 10px 10px 15px tomato;
+  "
+>
+  <h1 class="text-center">Howdy! {{ name['name'] }}</h1>
+</div>
+
 <div class="container mt-5">
   <div class="row">
     <h2 class="text-center">Search for recipes</h2>
