@@ -111,4 +111,3 @@ As an administrator, you can do the following:
 
  1. ****Q:** Do I need to register before searching for recipe?** *A: No, you can search for recipe and browse the recipe without creating an account. But in order to submit recipe(s), you need to register and logged in.*
  2. **Q: How to be an administrator?** *A: You cannot register as an administrator. You will have to input your username, name, hashed password, email, and set the role as `admin` by yourself to the `users` table in the provided database. The best way is use the provided credential mentioned in section 4.2, and change the username and password *
-
