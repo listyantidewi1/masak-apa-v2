@@ -34,6 +34,7 @@ https://github.com/listyantidewi1/masak-apa-v2
 3. Use the following command to clone the project:
 
     `$  git  clone  https://github.com/listyantidewi1/masak-apa-v2.git`
+   
     Make sure the clone process is finished before proceeding to the next step. The following screenshot shows the completed clone.
     ![completed clone process](https://raw.githubusercontent.com/listyantidewi1/masak-apa-v2/main/screenshots/git-clone.png)
   4. Change directory to application directory.
