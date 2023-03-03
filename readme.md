@@ -8,23 +8,31 @@ Hi! I'm your first Markdown file in **StackEdit**. If you want to learn about St
 To use `Masak Apa?`, you need to have the following software installed in your local computer. 
 
  1. Python 3.11 https://www.python.org/downloads/
- 2. CS50 Library for Python https://cs50.readthedocs.io/libraries/cs50/python/.
+ 2. PIP https://pip.pypa.io/en/stable/
+ 3. CS50 Library for Python https://cs50.readthedocs.io/libraries/cs50/python/.
  4. Flask-Session https://flask-session.readthedocs.io/en/latest/
+ 5. Git https://git-scm.com/doc
 
 ## Install Python
 Refer to this article to install and configure Python: https://realpython.com/installing-python/
 
+## Install PIP
+Refer to this documentation to install PIP:
+https://pip.pypa.io/en/stable/installation/
+
 ## Install CS50 for Python
 Use the following command in your terminal to install CS50 for Python:
 
-    $  pip3  install  cs50
+    $  pip3 install cs50
 The command will also install all other modules used in this project. 
 
 ## Install Flask-Session
 
 Use the following command in your terminal to install Flask-Session:
 
-    $  pip  install  Flask-Session
+    $  pip3 install Flask-Session
+## Install and Configure Git
+Refer to this documentation to install and configure Git: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
 
 # Clone and Launch The Application
 
@@ -33,16 +41,16 @@ https://github.com/listyantidewi1/masak-apa-v2
 2. Open terminal window, and change directory to your own choice
 3. Use the following command to clone the project:
 
-    `$  git  clone  https://github.com/listyantidewi1/masak-apa-v2.git`
+    `$  git clone https://github.com/listyantidewi1/masak-apa-v2.git`
    
     Make sure the clone process is finished before proceeding to the next step. The following screenshot shows the completed clone.
     ![completed clone process](https://raw.githubusercontent.com/listyantidewi1/masak-apa-v2/main/screenshots/git-clone.png)
   4. Change directory to application directory.
 
-		  $  cd  masak-apa-v2
+		  $  cd masak-apa-v2
 4. Launch the application
 	
-	    $  flask  run
+	    $  flask run
 	The application run on http://127.0.0.1:5000/ by default. The following landing page should appear:
 	![Application landing page](https://raw.githubusercontent.com/listyantidewi1/masak-apa-v2/main/screenshots/landing-page.png)
 	

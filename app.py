@@ -544,6 +544,23 @@ def show_recipe(id):
     is_search = len(search_result)
     return render_template("show_recipe.html", is_search=is_search, results=search_result, recipe=recipe, ingredients=ingredients, instructions=instructions, units=units, origin = origin, full_recipe = full_recipe, source = source)
 
+@app.route("/recipe/submitted/show/<id>", methods=["GET"])
+@login_required
+def show_submitted_recipe(id):
+    recipe = db.execute("select * from recipes_submitted where id = ?", id)[0]
+    # print(recipe)
+    ingredients = db.execute("select * from recipe_ingredients_submitted inner join ingredients on recipe_ingredients_submitted.ingredients_id = ingredients.id where recipe_id = ?", id)
+    # print(ingredients)
+    instructions = db.execute("select * from instructions_submitted where recipe_id = ?", id)[0]
+    units = db.execute("select units.name from units inner join recipe_ingredients_submitted on units.id = recipe_ingredients_submitted.unit_id where recipe_id = ?", id)
+    origin = db.execute("select origins.origin from origins inner join recipes_submitted on origins.id = recipes_submitted.origin_id where recipes_submitted.id = ?", id)[0]
+    full_recipe = db.execute("select recipes_submitted.name as recipename, recipes_submitted.description, recipes_submitted.image, recipes_submitted.img_src as imgsrc, recipes_submitted.recipe_src, origins.origin, recipe_ingredients_submitted.qty, instructions_submitted.instructions, units.name as unitname, ingredients.name as ingredientname from recipes_submitted inner join origins on recipes_submitted.origin_id = origins.id inner join recipe_ingredients_submitted on recipes_submitted.id = recipe_ingredients_submitted.recipe_id inner join instructions_submitted on recipes_submitted.id = instructions_submitted.recipe_id inner join units on recipe_ingredients_submitted.unit_id = units.id inner join ingredients on recipe_ingredients_submitted.ingredients_id = ingredients.id where recipes_submitted.id = ?", id)
+    source = db.execute("select img_src, recipe_src from recipes_submitted where id = ?",id)[0]
+    print(units)
+    is_search = len(search_result)
+    flash("You have successfully submitted a recipe! We will get into it soon!")
+    return render_template("show_recipe.html", is_search=is_search, results=search_result, recipe=recipe, ingredients=ingredients, instructions=instructions, units=units, origin = origin, full_recipe = full_recipe, source = source)
+
 @app.route("/recipe/show/all", methods=["GET", "POST"])
 def show_recipes():
     global search_result
@@ -551,8 +568,90 @@ def show_recipes():
         search_result.clear()
         recipes = db.execute("select recipes.id, recipes.name as recipe_name, recipes.image, recipes.description, recipe_ingredients.qty, instructions.instructions, units.name as unit_name from recipes inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id inner join units on recipe_ingredients.unit_id = units.id inner join instructions on recipes.id = instructions.recipe_id group by recipes.id order by recipes.created_at desc")
         return render_template("show_recipes.html", recipes=recipes)
+    
+@app.route("/recipe/show/submitted", methods=["GET"])
+def show_submitted_recipes():
+    user_id = session["user_id"]
+    global search_result
+    if request.method == "GET":
+        search_result.clear()
+        recipes = db.execute("select recipes_submitted.status, recipes_submitted.id, recipes_submitted.name as recipe_name, recipes_submitted.image, recipes_submitted.description, recipe_ingredients_submitted.qty, instructions_submitted.instructions, units.name as unit_name from recipes_submitted inner join recipe_ingredients_submitted on recipes_submitted.id = recipe_ingredients_submitted.recipe_id inner join ingredients on recipe_ingredients_submitted.ingredients_id = ingredients.id inner join units on recipe_ingredients_submitted.unit_id = units.id inner join instructions_submitted on recipes_submitted.id = instructions_submitted.recipe_id where recipes_submitted.user_id = ? group by recipes_submitted.id order by recipes_submitted.created_at desc", user_id)
+        print(recipes)
+        return render_template("show_submitted_recipes.html", recipes=recipes)
 
+@app.route("/recipe/submit", methods=["GET", "POST"])
+@login_required
+def submit_recipe():
+    user_id = session["user_id"]
+    if request.method == "GET":
+        ingredients = db.execute("SELECT * from ingredients order by name ASC")
+        units = db.execute("select * from units order by name ASC")
+        origins = db.execute("SELECT * from origins order by origin ASC")
+        #recipe = db.execute("select * from recipes where id = ?", id)[0]
+        # ingredients = sorted(ingredients)
+        # print(ingredients)
+        return render_template('add_recipe.html', ingredients=ingredients, units=units, origins=origins)
+    elif request.method == "POST":
+        # if not request.form.get("ingredients"):
+        #     return apology("choose at least one ingredient")
+        # elif not request.form.get("quantity"):
+        #     return apology("input quantity")
+        # elif not request.form.get("unit"):
+        #     return apology("specify the measurement unit")
+        ingredients = request.form.getlist("ingredients") #this will return a list / dictionary
+        print(ingredients)
+        while("" in ingredients):
+            ingredients.remove("")
+        # ingredients.remove('')
+        print(ingredients)
+            
+        quantities = request.form.getlist("quantity")
+        print(quantities)
+        while("" in quantities):
+            quantities.remove("")
+        # quantities.remove('')
+        print(quantities)
 
+        units = request.form.getlist("unit")
+        print(units)
+        while("" in units):
+            units.remove("")
+        # units.remove('')
+        print(units)
+
+        instruction = request.form.get("instruction")
+        # if not request.form.get("name"):
+        #     return apology("name belum diisi")
+        # elif not request.form.get("origin"):
+        #     return apology("origin belum diisi")
+        # elif not request.form.get("description"):
+        #     return apology("description belum diisi")
+        name = request.form.get("name")
+        origin = request.form.get("origin")
+        description = request.form.get("description")
+        img_src = request.form.get("img_src")
+        recipe_src = request.form.get("recipe_src")
+        f = request.files['file']
+        if f.filename == '':
+            return apology("No selected file")
+        if f and allowed_file(f.filename):
+            filename = secure_filename(f.filename)
+            f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            db.execute("insert into recipes_submitted(name, origin_id, image, description, img_src, recipe_src, user_id) values(?,?,?,?,?,?,?)", name, origin, filename, description, img_src, recipe_src, user_id)
+            current_recipe = db.execute("select id from recipes_submitted order by id desc limit 1")[0]
+            print(current_recipe['id'])
+            current_recipe_id = str(current_recipe['id'])
+            # ingredients = db.execute("select * from ingredients")
+            # units = db.execute("select * from units")
+            # return render_template("/admin/add_ingredients_instructions_admin.html", id = current_recipe_id, ingredients = ingredients, units = units)
+            for (ingredient, quantity, unit) in zip(ingredients, quantities, units):
+                db.execute("insert into recipe_ingredients_submitted(recipe_id, ingredients_id, qty, unit_id) values(?,?,?,?)",current_recipe_id, ingredient, quantity, unit)
+            db.execute("insert into instructions_submitted(recipe_id, instructions) values(?,?)", current_recipe_id, instruction)
+            return redirect('/recipe/submitted/show/'+current_recipe_id)
+        else:
+            return apology("pilih file dulu")
+
+    
 @app.route('/', methods=["GET"])
 def landingpage():
     latest_recipes = db.execute("select recipes.id, recipes.name as recipe_name, recipes.image, recipes.description, recipe_ingredients.qty, instructions.instructions, units.name as unit_name from recipes inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id inner join units on recipe_ingredients.unit_id = units.id inner join instructions on recipes.id = instructions.recipe_id group by recipes.id order by recipes.created_at desc limit 4")
