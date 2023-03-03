@@ -3,9 +3,33 @@
 <div class="container">
   <h1 class="text-center my-4">Hey, {{ user["name"] }}</h1>
   <div class="row">
-    <h6>Change password:</h6>
+    <h6>Edit Profile</h6>
     <div class="col-md-12">
       <form action="/profile" class="form-horizontal" method="POST">
+        <div class="form-group my-2">
+          <input
+            type="text"
+            name="username"
+            class="form-control"
+            value="{{ user['username'] }}"
+          />
+        </div>
+        <div class="form-group my-2">
+          <input
+            type="text"
+            name="name"
+            class="form-control"
+            value="{{ user['name'] }}"
+          />
+        </div>
+        <div class="form-group my-2">
+          <input
+            type="email"
+            name="email"
+            class="form-control"
+            value="{{ user['email'] }}"
+          />
+        </div>
         <div class="form-group my-2">
           <input
             type="password"
@@ -28,7 +52,7 @@
             type="submit"
             value="submit"
           >
-            Change Password
+            Save
           </button>
         </div>
       </form>

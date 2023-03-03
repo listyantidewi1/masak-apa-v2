@@ -1,38 +1,98 @@
-{% extends "layout_admin.html" %}
-
-{% block title %}
-    User management
-{% endblock %}
-
-{% block main %}
-
-<div class="container-sm mt-3">
-    <h2 class="text-center">List of Members</h2>
-    <div class="mb-5"></div>
-    <table class="table table-striped table-hover">
-        <thead>
-            <tr>
-                <th>Member ID</th>
-                <th>Name</th>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in users %}
-            <tr>
-                <td>{{ user["id"] }}</td>
-                <td>{{ user["name"] }}</td>
-                <td>{{ user["username"] }}</td>
-                <td>{{ user["email"] }}</td>
-                <td>
-                    <a href="/admin/users/{{ user['id'] }}/edit" class="btn btn-warning">Edit</a>
-                    <a href="/admin/users/{{ user['id'] }}/delete" onclick="return confirm('Are you sure you want to delete this item?');" class="btn btn-danger">Delete</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+{% extends "layout_admin.html" %} {% block title %} User management {% endblock
+%} {% block main %}
+<div class="container">
+  <div class="row">
+    <h6>Edit Profile</h6>
+    <div class="col-md-12 mt-2">
+      <form action="/admin/users" class="form-horizontal" method="POST">
+        <div class="form-group my-2">
+          <input
+            type="text"
+            name="username"
+            class="form-control"
+            value="{{ my_account['username'] }}"
+          />
+        </div>
+        <div class="form-group my-2">
+          <input
+            type="text"
+            name="name"
+            class="form-control"
+            value="{{ my_account['name'] }}"
+          />
+        </div>
+        <div class="form-group my-2">
+          <input
+            type="email"
+            name="email"
+            class="form-control"
+            value="{{ my_account['email'] }}"
+          />
+        </div>
+        <div class="form-group my-2">
+          <input
+            type="password"
+            name="password"
+            class="form-control"
+            placeholder="Type your new password"
+          />
+        </div>
+        <div class="form-group my-2">
+          <input
+            type="password"
+            name="confirmation"
+            class="form-control"
+            placeholder="Re-type your new password"
+          />
+        </div>
+        <div class="form-group mt-2 mb-4">
+          <button
+            class="btn btn-danger form-control"
+            type="submit"
+            value="submit"
+          >
+            Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
+<div class="container-sm mt-3">
+  <h2 class="text-center">List of Members</h2>
+  <div class="mb-5"></div>
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Member ID</th>
+        <th>Name</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr>
+        <td>{{ user["id"] }}</td>
+        <td>{{ user["name"] }}</td>
+        <td>{{ user["username"] }}</td>
+        <td>{{ user["email"] }}</td>
+        <td>
+          <a href="/admin/users/{{ user['id'] }}/edit" class="btn btn-warning"
+            >Edit</a
+          >
+          <a
+            href="/admin/users/{{ user['id'] }}/delete"
+            onclick="return confirm('Are you sure you want to delete this item?');"
+            class="btn btn-danger"
+            >Delete</a
+          >
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
 {% endblock %}

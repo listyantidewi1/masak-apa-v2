@@ -57,9 +57,16 @@ def profile():
         confirmation = request.form.get("confirmation")
         hash = generate_password_hash(password)
         if password == confirmation:
-            db.execute("update users set password=? where id = ?", hash, id)
+            username = request.form.get("username")
+            email = request.form.get("email")
+            name = request.form.get("name")
+            db.execute("update users set password=?, username=?, name=?, email=? where id = ?", hash, username, name, email, id)
             flash("Profile updated")
-            return redirect("/profile")
+            return redirect("/admin/users")
+        else:
+            flash("Profile update failed")
+            return redirect("/admin/users")
+
 
 # admin dashboard                       
 @app.route("/admin")
@@ -473,9 +480,6 @@ def approve_recipe(id):
     for i in submitted_ingredients:
         db.execute("insert into recipe_ingredients(recipe_id, ingredients_id, qty, unit_id) values(?,?,?,?)", current_recipe_id, i['ingredients_id'], i['qty'], i['unit_id'])
     db.execute("insert into instructions(recipe_id, instructions) values(?,?)", current_recipe_id, submitted_instruction['instructions'])
-    # db.execute("delete from recipe_ingredients_submitted where recipe_id = ?",id)
-    # db.execute("delete from instructions_submitted where recipe_id = ?",id)
-    # db.execute("delete from recipes_submitted where id = ?",id)
     flash("Recipe has been approved successfully")
     return redirect("/admin/recipes/submitted")
 
@@ -483,24 +487,33 @@ def approve_recipe(id):
 @login_admin_required
 def reject_recipe(id):
     db.execute("update recipes_submitted set status = 2 where id = ?", id)
-    # db.execute("delete from recipe_ingredients_submitted where recipe_id = ?",id)
-    # db.execute("delete from instructions_submitted where recipe_id = ?",id)
-    # db.execute("delete from recipes_submitted where id = ?",id)
     flash("Recipe has been rejected successfully")
     return redirect("/admin/recipes/submitted")
 
-@app.route("/admin/users", methods=["GET"])
+@app.route("/admin/users", methods=["GET", "POST"])
 @login_admin_required
 def users():
-    users = db.execute("select id, name, username, email from users where role = 'member'")
-    return render_template("/admin/users.html", users = users)
+    user_id = session["user_id"]
+    if request.method == "GET":
+        users = db.execute("select id, name, username, email from users where role = 'member'")
+        admins = db.execute("select id, name, email from users where role = 'admin'")
+        my_account = db.execute ("select * from users where id = ?", user_id)[0]
+        return render_template("/admin/users.html", users = users, admins=admins, my_account=my_account)
+    elif request.method == "POST":
+        password = request.form.get("password")
+        confirmation = request.form.get("confirmation")
+        hash = generate_password_hash(password)
+        if password == confirmation:
+            username = request.form.get("username")
+            email = request.form.get("email")
+            name = request.form.get("name")
+            db.execute("update users set password=?, username=?, name=?, email=? where id = ?", hash, username, name, email, user_id)
+            flash("Profile updated")
+            return redirect("/admin/users")
+        else:
+            flash("Profile update failed")
+            return redirect("/admin/users")
 
-    #return apology("Bagian users belum dikerjain?", 403)
-
-@app.route("/admin/profile", methods=["GET", "POST"])
-@login_admin_required
-def admin_profile():
-    return apology("Bagian profile belum dikerjain?", 403)
 
 @app.route("/recipe/search", methods=["GET", "POST"])
 def recipe_search():
