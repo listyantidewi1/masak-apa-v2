@@ -1,42 +1,5 @@
 {% extends "layout_admin.html" %} {% block title %} Add Recipe {% endblock %} {%
 block main %}
-<!-- <div class="container">
-      <h1 class="text-center mb-3">Add a new recipe</h1>
-      <form action="/admin/recipes" method="post" enctype="multipart/form-data">
-        <div class="form-group mb-3">
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Recipe name"
-            name="name"
-          />
-        </div>
-        <div class="form-group mb-3">
-          <label for="origin">Recipe origin</label>
-          <select name="origin" id="origin" class="form-control">
-            {% for origin in listOris %}
-            <option value="{{ origin['id'] }}">{{ origin["origin"] }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="form-group mb-3">
-          <label for="file">Add image</label>
-          <input type="file" class="form-control" name="file" />
-        </div>
-        <div class="form-group mb-3">
-          <textarea
-            class="form-control"
-            name="description"
-            placeholder="Enter recipe description"
-          ></textarea>
-        </div>
-        <div class="form-group mb-3">
-          <button class="btn btn-primary form-control" type="submit" value="submit">
-            Add
-          </button>
-        </div>
-      </form>
-    </div> -->
 <div class="container-lg mb-4">
   <div class="row">
     <div>

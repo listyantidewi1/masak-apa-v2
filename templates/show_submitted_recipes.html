@@ -18,7 +18,7 @@ main %}
           {% elif recipe['status'] == 1 %}
           <div class="bg-success p-1" style="border-radius: 1px">This recipe has been approved</div>
           {% else %}
-          <div class="bg-success p-1" style="border-radius: 1px">This recipe has been rejected</div>
+          <div class="bg-danger p-1" style="border-radius: 1px">This recipe has been rejected</div>
           {% endif %}
           <p class="card-text">{{ recipe["description"]|truncate(50) }}</p>
           <a href="/recipe/show/{{ recipe['id'] }}" class="btn btn-primary"

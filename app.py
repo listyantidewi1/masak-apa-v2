@@ -274,16 +274,10 @@ def categories_delete(id):
 
 @app.route("/admin/recipes", methods=["GET"])
 @login_admin_required
-def add_recipes():
+def show_recipes_admin():
     if request.method == 'GET':
-        # listOri = db.execute("select * from origins")
-        # ingredients = db.execute("select id, name from ingredients")
-        # origins = db.execute("select id, origin from origins")
-        # units = db.execute("select id, name from units")
-        # return render_template("add_recipes_admin.html", ingredients = ingredients, origins = origins, units = units)
         recipes = db.execute("select recipes.id, recipes.name as recipe_name, recipes.image, recipes.description, recipe_ingredients.qty, instructions.instructions, units.name as unit_name from recipes inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id inner join units on recipe_ingredients.unit_id = units.id inner join instructions on recipes.id = instructions.recipe_id group by recipes.id order by recipes.created_at desc")
         return render_template("/admin/show_recipes_admin.html", recipes = recipes)
-    # elif request.method == 'POST':
 
 
 @app.route("/admin/recipe/add/", methods=["GET", "POST"])
@@ -375,6 +369,22 @@ def show_recipe_admin(id):
     source = db.execute("select img_src, recipe_src from recipes where id = ?",id)[0]
     return render_template("/admin/show_recipe_admin.html", recipe=recipe, ingredients=ingredients, instructions=instructions, units=units, origin=origin, full_recipe=full_recipe, source=source)# show a recipe detail
 
+# show a recipe detail
+@app.route("/admin/recipe/show/submitted/<id>", methods=["GET"])
+@login_admin_required
+def show_submitted_recipe_admin(id):
+    recipe = db.execute("select * from recipes_submitted where id = ?", id)[0]
+    # print(recipe)
+    ingredients = db.execute("select * from recipe_ingredients_submitted inner join ingredients on recipe_ingredients_submitted.ingredients_id = ingredients.id where recipe_id = ?", id)
+    instructions = db.execute("select * from instructions_submitted where recipe_id = ?", id)[0]
+    units = db.execute("select units.name from units inner join recipe_ingredients_submitted on units.id = recipe_ingredients_submitted.unit_id where recipe_id = ?", id)
+    # print(units)
+    origin = db.execute("select origins.origin from origins inner join recipes_submitted on origins.id = recipes_submitted.origin_id where recipes_submitted.id = ?", id)[0]
+    print(units)
+    full_recipe = db.execute("select recipes_submitted.name as recipename, recipes_submitted.description, recipes_submitted.image, recipes_submitted.recipe_src, recipes_submitted.img_src as imgsrc, origins.origin, recipe_ingredients_submitted.qty, instructions_submitted.instructions, units.name as unitname, ingredients.name as ingredientname from recipes_submitted inner join origins on recipes_submitted.origin_id = origins.id inner join recipe_ingredients_submitted on recipes_submitted.id = recipe_ingredients_submitted.recipe_id inner join instructions_submitted on recipes_submitted.id = instructions_submitted.recipe_id inner join units on recipe_ingredients_submitted.unit_id = units.id inner join ingredients on recipe_ingredients_submitted.ingredients_id = ingredients.id where recipes_submitted.id = ?", id)
+    source = db.execute("select img_src, recipe_src from recipes_submitted where id = ?",id)[0]
+    return render_template("/admin/show_recipe_admin.html", recipe=recipe, ingredients=ingredients, instructions=instructions, units=units, origin=origin, full_recipe=full_recipe, source=source)# show a recipe detail
+
 # TODO: edit recipe admin
 @app.route("/admin/recipe/<id>/edit", methods=["GET","POST"])
 @login_admin_required
@@ -442,6 +452,42 @@ def recipe_delete(id):
     db.execute("delete from recipes where id=?", id)
     return redirect("/admin/recipes")
 
+@app.route("/admin/recipes/submitted", methods=["GET"])
+@login_admin_required
+def show_recipes_submitted_admin():
+    if request.method == 'GET':
+        recipes = db.execute("select recipes_submitted.status, recipes_submitted.id, recipes_submitted.name as recipe_name, recipes_submitted.image, recipes_submitted.description, recipe_ingredients_submitted.qty, instructions_submitted.instructions, units.name as unit_name from recipes_submitted inner join recipe_ingredients_submitted on recipes_submitted.id = recipe_ingredients_submitted.recipe_id inner join ingredients on recipe_ingredients_submitted.ingredients_id = ingredients.id inner join units on recipe_ingredients_submitted.unit_id = units.id inner join instructions_submitted on recipes_submitted.id = instructions_submitted.recipe_id group by recipes_submitted.id order by recipes_submitted.created_at desc")
+        return render_template("/admin/show_submitted_recipes_admin.html", recipes = recipes)
+    
+@app.route("/admin/recipe/<id>/approve",  methods=["GET"])
+@login_admin_required
+def approve_recipe(id):
+    submitted_recipe = db.execute("SELECT * FROM recipes_submitted WHERE id = ?", id)[0]
+    submitted_ingredients = db.execute("SELECT * FROM recipe_ingredients_submitted WHERE recipe_id = ?", id)
+    submitted_instruction = db.execute("Select * from instructions_submitted WHERE recipe_id = ?", id)[0]
+    db.execute("update recipes_submitted set status = 1 where id = ?", id)
+    db.execute("insert into recipes(name, origin_id, image, description, img_src, recipe_src) values(?,?,?,?,?,?)", submitted_recipe['name'], submitted_recipe['origin_id'], submitted_recipe['image'], submitted_recipe['description'], submitted_recipe['img_src'], submitted_recipe['recipe_src'])
+    current_recipe = db.execute("select id from recipes order by id desc limit 1")[0]
+    print(current_recipe['id'])
+    current_recipe_id = str(current_recipe['id'])
+    for i in submitted_ingredients:
+        db.execute("insert into recipe_ingredients(recipe_id, ingredients_id, qty, unit_id) values(?,?,?,?)", current_recipe_id, i['ingredients_id'], i['qty'], i['unit_id'])
+    db.execute("insert into instructions(recipe_id, instructions) values(?,?)", current_recipe_id, submitted_instruction['instructions'])
+    # db.execute("delete from recipe_ingredients_submitted where recipe_id = ?",id)
+    # db.execute("delete from instructions_submitted where recipe_id = ?",id)
+    # db.execute("delete from recipes_submitted where id = ?",id)
+    flash("Recipe has been approved successfully")
+    return redirect("/admin/recipes/submitted")
+
+@app.route("/admin/recipe/<id>/reject",  methods=["GET"])
+@login_admin_required
+def reject_recipe(id):
+    db.execute("update recipes_submitted set status = 2 where id = ?", id)
+    # db.execute("delete from recipe_ingredients_submitted where recipe_id = ?",id)
+    # db.execute("delete from instructions_submitted where recipe_id = ?",id)
+    # db.execute("delete from recipes_submitted where id = ?",id)
+    flash("Recipe has been rejected successfully")
+    return redirect("/admin/recipes/submitted")
 
 @app.route("/admin/users", methods=["GET"])
 @login_admin_required
