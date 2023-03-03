@@ -1,4 +1,4 @@
-﻿# Project Description
+﻿# Application Description
 
 Hi! I'm your first Markdown file in **StackEdit**. If you want to learn about StackEdit, you can read me. If you want to play with Markdown, you can edit me. Once you have finished with me, you can create new files by opening the **file explorer** on the left corner of the navigation bar.
 
@@ -15,134 +15,71 @@ To use `Masak Apa?`, you need to have the following software installed in your l
 Refer to this article to install and configure Python: https://realpython.com/installing-python/
 
 ## Install CS50 for Python
-Type the following command in your terminal to install CS50 for Python:
+Use the following command in your terminal to install CS50 for Python:
 
     $  pip3  install  cs50
 The command will also install all other modules used in this project. 
 
 ## Install Flask-Session
 
-You can rename the current file by clicking the file name in the navigation bar or by clicking the **Rename** button in the file explorer.
+Use the following command in your terminal to install Flask-Session:
 
-## Delete a file
+    $  pip  install  Flask-Session
 
-You can delete the current file by clicking the **Remove** button in the file explorer. The file will be moved into the **Trash** folder and automatically deleted after 7 days of inactivity.
+# Clone and Launch The Application
 
-## Export a file
+ 1. Navigate to the project repository using the following link:
+https://github.com/listyantidewi1/masak-apa-v2
+2. Open terminal window, and change directory to your own choice
+3. Use the following command to clone the project:
 
-You can export the current file by clicking **Export to disk** in the menu. You can choose to export the file as plain Markdown, as HTML using a Handlebars template or as a PDF.
+    `$  git  clone  https://github.com/listyantidewi1/masak-apa-v2.git`
+    Make sure the clone process is finished before proceeding to the next step. The following screenshot shows the completed clone.
+    ![completed clone process](https://raw.githubusercontent.com/listyantidewi1/masak-apa-v2/main/screenshots/git-clone.png)
+  4. Change directory to application directory.
 
+		  $  cd  masak-apa-v2
+4. Launch the application
+	
+	    $  flask  run
+	The application run on http://127.0.0.1:5000/ by default. The following landing page should appear:
+	![Application landing page](https://raw.githubusercontent.com/listyantidewi1/masak-apa-v2/main/screenshots/landing-page.png)
+	
+# Using The Application
 
-# Synchronization
+## As Member
+To use as member, you must first register for an account. Navigate to http://127.0.0.1:5000/register, and complete the registration process by providing username, name, password, and email correctly.  You will be logged-in automatically to the member dashboard after a successfull registration.
 
-Synchronization is one of the biggest features of StackEdit. It enables you to synchronize any file in your workspace with other files stored in your **Google Drive**, your **Dropbox** and your **GitHub** accounts. This allows you to keep writing on other devices, collaborate with people you share the file with, integrate easily into your workflow... The synchronization mechanism takes place every minute in the background, downloading, merging, and uploading file modifications.
+[insert dashboard screenshot here]
 
-There are two types of synchronization and they can complement each other:
+To search for recipe(s), check the ingredient(s) of your choice and then click `search`. You will be redirected to a result page displaying recipe(s) which use the ingredient(s) you provided.
 
-- The workspace synchronization will sync all your files, folders and settings automatically. This will allow you to fetch your workspace on any other device.
-	> To start syncing your workspace, just sign in with Google in the menu.
+[insert search recipe screenshot here]
 
-- The file synchronization will keep one file of the workspace synced with one or multiple files in **Google Drive**, **Dropbox** or **GitHub**.
-	> Before starting to sync files, you must link an account in the **Synchronize** sub-menu.
+[insert search result page screenshot here]
 
-## Open a file
+You can also browse for recipes, view latest recipes, and change your current password.
+## As Administrator
+You cannot register yourself as administrator. But to get a taste of what the application's administrator can do, navigate to login page via using the navbar, and use the following credential:
 
-You can open a file from **Google Drive**, **Dropbox** or **GitHub** by opening the **Synchronize** sub-menu and clicking **Open from**. Once opened in the workspace, any modification in the file will be automatically synced.
+    username: dewi
+    password: 12345
+As an administrator, you can do the following:
 
-## Save a file
+ 1. Add, view, edit, or delete recipes
+ 2. Add, view, edit, or delete ingredients
+ 3. Add, view, edit, or delete ingredient categories
+ 4. Add, view, edit, or delete recipe/ingredient origin
+ 5. Add, view, edit, or delete measurement units used by recipe
+ 6. Delete user(s)
 
-You can save any file of the workspace to **Google Drive**, **Dropbox** or **GitHub** by opening the **Synchronize** sub-menu and clicking **Save on**. Even if a file in the workspace is already synced, you can save it to another location. StackEdit can sync one file with multiple locations and accounts.
+### Work With Ingredient Categories
+### Work With Ingredient/Recipe Origins
+### Work With Measurement Units
+### Work With Recipe Ingredients
+### Work With Recipes
+### Manage User(s)
 
-## Synchronize a file
+# FAQs
 
-Once your file is linked to a synchronized location, StackEdit will periodically synchronize it by downloading/uploading any modification. A merge will be performed if necessary and conflicts will be resolved.
-
-If you just have modified your file and you want to force syncing, click the **Synchronize now** button in the navigation bar.
-
-> **Note:** The **Synchronize now** button is disabled if you have no file to synchronize.
-
-## Manage file synchronization
-
-Since one file can be synced with multiple locations, you can list and manage synchronized locations by clicking **File synchronization** in the **Synchronize** sub-menu. This allows you to list and remove synchronized locations that are linked to your file.
-
-
-# Publication
-
-Publishing in StackEdit makes it simple for you to publish online your files. Once you're happy with a file, you can publish it to different hosting platforms like **Blogger**, **Dropbox**, **Gist**, **GitHub**, **Google Drive**, **WordPress** and **Zendesk**. With [Handlebars templates](http://handlebarsjs.com/), you have full control over what you export.
-
-> Before starting to publish, you must link an account in the **Publish** sub-menu.
-
-## Publish a File
-
-You can publish your file by opening the **Publish** sub-menu and by clicking **Publish to**. For some locations, you can choose between the following formats:
-
-- Markdown: publish the Markdown text on a website that can interpret it (**GitHub** for instance),
-- HTML: publish the file converted to HTML via a Handlebars template (on a blog for example).
-
-## Update a publication
-
-After publishing, StackEdit keeps your file linked to that publication which makes it easy for you to re-publish it. Once you have modified your file and you want to update your publication, click on the **Publish now** button in the navigation bar.
-
-> **Note:** The **Publish now** button is disabled if your file has not been published yet.
-
-## Manage file publication
-
-Since one file can be published to multiple locations, you can list and manage publish locations by clicking **File publication** in the **Publish** sub-menu. This allows you to list and remove publication locations that are linked to your file.
-
-
-# Markdown extensions
-
-StackEdit extends the standard Markdown syntax by adding extra **Markdown extensions**, providing you with some nice features.
-
-> **ProTip:** You can disable any **Markdown extension** in the **File properties** dialog.
-
-
-## SmartyPants
-
-SmartyPants converts ASCII punctuation characters into "smart" typographic punctuation HTML entities. For example:
-
-|                |ASCII                          |HTML                         |
-|----------------|-------------------------------|-----------------------------|
-|Single backticks|`'Isn't this fun?'`            |'Isn't this fun?'            |
-|Quotes          |`"Isn't this fun?"`            |"Isn't this fun?"            |
-|Dashes          |`-- is en-dash, --- is em-dash`|-- is en-dash, --- is em-dash|
-
-
-## KaTeX
-
-You can render LaTeX mathematical expressions using [KaTeX](https://khan.github.io/KaTeX/):
-
-The *Gamma function* satisfying $\Gamma(n) = (n-1)!\quad\forall n\in\mathbb N$ is via the Euler integral
-
-$$
-\Gamma(z) = \int_0^\infty t^{z-1}e^{-t}dt\,.
-$$
-
-> You can find more information about **LaTeX** mathematical expressions [here](http://meta.math.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference).
-
-
-## UML diagrams
-
-You can render UML diagrams using [Mermaid](https://mermaidjs.github.io/). For example, this will produce a sequence diagram:
-
-```mermaid
-sequenceDiagram
-Alice ->> Bob: Hello Bob, how are you?
-Bob-->>John: How about you John?
-Bob--x Alice: I am good thanks!
-Bob-x John: I am good thanks!
-Note right of John: Bob thinks a long<br/>long time, so long<br/>that the text does<br/>not fit on a row.
-
-Bob-->Alice: Checking with John...
-Alice->John: Yes... John, how are you?
-```
-
-And this will produce a flow chart:
-
-```mermaid
-graph LR
-A[Square Rect] -- Link text --> B((Circle))
-A --> C(Round Rect)
-B --> D{Rhombus}
-C --> D
-```
+[provide FAQS here]
