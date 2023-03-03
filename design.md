@@ -146,6 +146,7 @@
 
 # Structure
 ![website structure](https://raw.githubusercontent.com/listyantidewi1/masak-apa-v2/main/screenshots/structure.png)
+
 All the assets and resources used in this application are located inside the `static` folder. Meanwhile `templates` keep all the HTML files which renders results returned by `app.py`.
 The backbone of `Masak Apa?` is in `app.py`, where records from the database are retrieved and modified, user inputs are processed, and results are rendered to the templates.
 `helpers.py` provides several functions to help with multi-level authentication and the adaptation of the famous CS50's apology from `finance`.
