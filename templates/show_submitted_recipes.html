@@ -14,11 +14,17 @@ main %}
         <div class="card-body">
           <h5 class="card-title">{{ recipe["recipe_name"] }}</h5>
           {% if recipe['status'] == 0 %}
-          <div class="bg-warning p-1" style="border-radius: 1px">This recipe is under review</div>
+          <div class="bg-warning p-1" style="border-radius: 3px">
+            This recipe is under review
+          </div>
           {% elif recipe['status'] == 1 %}
-          <div class="bg-success p-1" style="border-radius: 1px">This recipe has been approved</div>
+          <div class="bg-info p-1" style="border-radius: 3px">
+            This recipe has been approved
+          </div>
           {% else %}
-          <div class="bg-danger p-1" style="border-radius: 1px">This recipe has been rejected</div>
+          <div class="bg-danger p-1" style="border-radius: 3px">
+            This recipe has been rejected
+          </div>
           {% endif %}
           <p class="card-text">{{ recipe["description"]|truncate(50) }}</p>
           <a href="/recipe/show/{{ recipe['id'] }}" class="btn btn-primary"

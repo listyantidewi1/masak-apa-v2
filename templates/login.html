@@ -1,53 +1,53 @@
-{% extends "layout.html" %}
-
-{% block title %}
-    Log In
-{% endblock %}
-
-{% block main %}
+{% extends "layout.html" %} {% block title %} Log In {% endblock %} {% block
+main %}
 <div class="container col-xl-10 col-xxl-8 px-4 py-1">
-    <div class="row align-items-center g-lg-5 py-2">
-      <div class="col-lg-7 text-center text-lg-start">
-        <h1 class="text-shadow-1 display-4 fw-bold lh-1 mb-3">
-          Login to access your account
-        </h1>
-        <p class="col-lg-10 fs-4">
-          Login using your registered username to access your courses
-        </p>
-      </div>
-      <div class="col-md-10 mx-auto col-lg-5">
-        <form class="p-4 p-md-5 border rounded-3 bg-light" action="/login" method="POST">
-          <div class="form-floating mb-3">
-            <input
-              type="text"
-              class="form-control form-control-dark"
-              id="floatingInput"
-              name="username"
-              placeholder="Enter your registered username"
-            />
-            <label for="floatingInput">Username</label>
-          </div>
-          <div class="form-floating mb-3">
-            <input
-              type="password"
-              class="form-control form-control-dark"
-              id="floatingPassword"
-              name="password"
-              placeholder="Password"
-            />
-            <label for="floatingPassword">Password</label>
-          </div>
-          <div class="checkbox mb-3">
-            <label>
-              <input type="checkbox" value="remember-me" /> Remember me
-            </label>
-          </div>
-          <button class="w-100 btn btn-lg btn-primary" type="submit">
-            Login
-          </button>
-          <hr class="my-4" />
-        </form>
-      </div>
+  <div class="row align-items-center g-lg-5 py-2">
+    <div class="col-lg-7 text-center text-lg-start">
+      <h1 class="text-shadow-1 display-4 fw-bold lh-1 mb-3">
+        Login to access your account
+      </h1>
+      <p class="col-lg-10 fs-4">
+        Login using your registered account to access more features!
+      </p>
+      <img src="/static/img/hero-2.png" style="width: 100%" />
+    </div>
+    <div class="col-md-10 mx-auto col-lg-5">
+      <form
+        class="p-4 p-md-5 border rounded-3 bg-light"
+        action="/login"
+        method="POST"
+      >
+        <div class="form-floating mb-3">
+          <input
+            type="text"
+            class="form-control form-control-dark"
+            id="floatingInput"
+            name="username"
+            placeholder="Enter your registered username"
+          />
+          <label for="floatingInput">Username</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input
+            type="password"
+            class="form-control form-control-dark"
+            id="floatingPassword"
+            name="password"
+            placeholder="Password"
+          />
+          <label for="floatingPassword">Password</label>
+        </div>
+        <div class="checkbox mb-3">
+          <label>
+            <input type="checkbox" value="remember-me" /> Remember me
+          </label>
+        </div>
+        <button class="w-100 btn btn-lg btn-primary" type="submit">
+          Login
+        </button>
+        <hr class="my-4" />
+      </form>
     </div>
   </div>
+</div>
 {% endblock %}
