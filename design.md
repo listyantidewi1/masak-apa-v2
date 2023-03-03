@@ -3,6 +3,8 @@
 # Overview
  `Masak Apa?` is a web-based application developed with Python, HTML, CSS, and JavaScript. The main modules used to develop `Masak Apa?` is Flask (https://palletsprojects.com/p/flask/) and CS50 Library for Python (https://cs50.readthedocs.io/libraries/cs50/python/), while the database engine used in `Masak Apa?` is SQLite (https://www.sqlite.org/index.html). The application is free for use and is available in https://github.com/listyantidewi1/masak-apa-v2.
 
+Link to the video: https://youtu.be/U0YIYFc36x8
+
 # Database Schema
 `categories` table: to store each ingredient's category
 

@@ -1,9 +1,10 @@
 ﻿# 1. Application Description
 
-Background of the project
-We as mother -and maybe it happens to other mother- every morning we often feel confused about what to serve for breakfast. When see ingredients we have in the refrigerator, we have no idea what to cook. At the end, we only often serve simple fried dishes, such as fried chicken, fried tofu, fried eggs or fried fish
+We as mother -and maybe it happens to other mother- every morning we often feel confused about what to serve for breakfast. When see ingredients we have in the refrigerator, we have no idea what to cook. At the end, we only often serve simple fried dishes, such as fried chicken, fried tofu, fried eggs or fried fish.
 
-Aim of the project
+Link to the video: https://youtu.be/U0YIYFc36x8
+
+Aim of the project:
 1. Make ourself and others easier to find the right recipe according to the ingredients available in the refrigerator.
 2. Reducing stress levels in the morning just because thinking about what to cook for breakfast. We believe, if the morning starts with enthusiasm, then we'll run all the day with enthusiasm too. And that can start from the kitchen. Vice versa
 
