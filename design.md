@@ -6,7 +6,9 @@
 Link to the video: https://youtu.be/U0YIYFc36x8
 
 # Database Schema
-`categories` table: to store each ingredient's category
+The database is designed using relational model because for a single recipe, there maybe many ingredients needed. Also, a recipe or an ingredient has certain origin and category. Foreign key constraint is used to keep the database integrity.
+
+`categories` table: to store each ingredient's category. It's related to `ingredients` table, referenced by the `id`.
 
     CREATE TABLE "categories" (
     	"id"	integer NOT NULL,
@@ -15,7 +17,7 @@ Link to the video: https://youtu.be/U0YIYFc36x8
     	"updated_at"	datetime DEFAULT CURRENT_TIMESTAMP,
     	PRIMARY KEY("id" AUTOINCREMENT)
     )
-`ingredients` table: to store ingredients which are used as keywords and ingredients for the recipes.
+`ingredients` table: to store ingredients which are used as keywords and ingredients for the recipes. It is related to `origins` and `categories`, all referenced by the `id`.
 
     CREATE TABLE "ingredients" (
     	"id"	integer NOT NULL,
@@ -42,7 +44,7 @@ Link to the video: https://youtu.be/U0YIYFc36x8
     	PRIMARY KEY("id" AUTOINCREMENT)
     )
 
-`units` table: to store measurement unit list
+`units` table: to store measurement units. It is related to `recipe_ingredients` to provide measurement unit for each ingredient and the quantity of a recipe.
 
     CREATE TABLE "units" (
     	"id"	integer NOT NULL,
@@ -51,7 +53,7 @@ Link to the video: https://youtu.be/U0YIYFc36x8
     	"updated_at"	datetime DEFAULT CURRENT_TIMESTAMP,
     	PRIMARY KEY("id" AUTOINCREMENT)
     )
-`recipes` table: to store details of recipes
+`recipes` table: to store details of recipes. It's related to `origins` to define the origins of the recipes.
 
     CREATE TABLE "recipes" (
     	"id"	integer NOT NULL,
@@ -67,7 +69,7 @@ Link to the video: https://youtu.be/U0YIYFc36x8
     	FOREIGN KEY("origin_id") REFERENCES "origins"("id") on delete cascade on update cascade
     )
     
-`recipes_submitted` table: to store users' submitted recipes. `status` defines the status of the submitted recipe. 0 = in review, 1 = approved, 2 = rejected.
+`recipes_submitted` table: to store users' submitted recipes. `status` defines the status of the submitted recipe. `0` = in review, `1` = approved, `2` = rejected.
 
     CREATE TABLE "recipes_submitted" (
     	"id"	integer NOT NULL,
@@ -113,7 +115,7 @@ Link to the video: https://youtu.be/U0YIYFc36x8
     	FOREIGN KEY("ingredients_id") REFERENCES "ingredients"("id")
     )
 
-`instructions` table: to store instructions of recipes
+`instructions` table: to store instructions of recipes. It's related to `recipes` referenced by the `id`.
 
     CREATE TABLE "instructions" (
     	"id"	INTEGER NOT NULL,
