@@ -1,6 +1,7 @@
 from flask import redirect, render_template, session
 from functools import wraps
 
+# handle login as member, adapted from CS50 finance
 def login_required(f):
     """
     Decorate routes to require login.
@@ -14,6 +15,7 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+# handle login as admin, adapted from CS50 finance
 def login_admin_required(f):
     """
     Decorate routes to require login.
@@ -27,6 +29,7 @@ def login_admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+# apology, adopted from cs50 finance
 def apology(message, code=400):
     # komentar 1 baris
     """Render message as an apology to user."""

@@ -1,3 +1,4 @@
+# import all the required modules and libraries
 from cs50 import SQL
 import os
 from flask import Flask, flash, redirect, render_template, request, session
@@ -7,9 +8,10 @@ from werkzeug.utils import secure_filename
 
 from helpers import login_required, login_admin_required, apology
 
-# configure application
-
+# configure directory for uploaded files
 UPLOAD_FOLDER = 'static/uploads'
+
+# configure allowed file extensions to be uploaded
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
@@ -23,9 +25,10 @@ Session(app)
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///masakapa.sqlite")
 
+# global variabel to store temporary recipe search result
 search_result = []
 
-# specify the list of allowed file extensions to be uploaded
+# handle file upload
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -38,31 +41,38 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
-# submit a new recipe for member
-@app.route("/add")
-@login_required
-def add():
-    return apology("Haven't implemented yet?", 403)
-
-# change password for member
+# handle edit profile for member
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
-    id = session["user_id"]
+    # get the logged in user id
+    id = session["user_id"] 
     if request.method == "GET":
+        # display the user profile
         user = db.execute("select * from users where id = ?", id)[0]
         return render_template("profile.html", id=id, user=user)
     elif request.method == "POST":
+        # get the new password
         password = request.form.get("password")
         confirmation = request.form.get("confirmation")
+        # hash the password
         hash = generate_password_hash(password)
+        # only update the profile if the password matches the confirmation
         if password == confirmation:
+            # get all other data
             username = request.form.get("username")
             email = request.form.get("email")
             name = request.form.get("name")
-            db.execute("update users set password=?, username=?, name=?, email=? where id = ?", hash, username, name, email, id)
-            flash("Profile updated")
-            return redirect("/admin/users")
+            # if not changing password
+            if not request.form.get("password"):
+                db.execute("update users set username = ?, name=?, email = ? where id = ?", username, name, email, id)
+                flash("Profile updated")
+                return redirect("/admin/users")
+            else:
+                # if changing password
+                db.execute("update users set password=?, username=?, name=?, email=? where id = ?", hash, username, name, email, id)
+                flash("Profile updated")
+                return redirect("/admin/users")
         else:
             flash("Profile update failed")
             return redirect("/admin/users")
@@ -72,18 +82,25 @@ def profile():
 @app.route("/admin")
 @login_admin_required
 def admin_dashboard():
-    #name = session["name"]
+    # get the user id
     id = session["user_id"]
+    # count the number of users, recipes, ingredients, ingredient origins, categories, and units
     n_users = db.execute("select count(id) as n_users from users where role = 'member'")
     n_recipes = db.execute("select count(id) as n_recipes from instructions")
     n_ingr = db.execute("select count(id) as n_ingr from ingredients")
     n_ori = db.execute("select count(id) as n_ori from origins")
     n_cat = db.execute("select count(id) as n_cat from categories")
     n_unit = db.execute("select count(id) as n_unit from units")
+    # get the user's name
     name = db.execute("select name from users where id = ?", id)
     return render_template("/admin/admin.html", users = n_users[0], recipes=n_recipes[0], ingredients = n_ingr[0], origins=n_ori[0], categories=n_cat[0], unit =n_unit[0], name=name[0])
 
 
+
+''' handle CRUD for table: units
+'''
+
+# view all and add new unit
 @app.route("/admin/units", methods=["GET", "POST"])
 @login_admin_required
 def units():
@@ -98,6 +115,7 @@ def units():
             db.execute("insert into units (name) values(?)", unit)
             return redirect("/admin/units")
 
+# edit unit
 @app.route("/admin/units/<id>/edit", methods=["GET", "POST"])
 @login_admin_required
 def units_edit(id):
@@ -112,6 +130,7 @@ def units_edit(id):
         flash("The measurement unit has been successfully edited")
         return redirect("/admin/units")
 
+# delete unit
 @app.route("/admin/units/<id>/delete", methods=["GET"])
 @login_admin_required
 def units_delete(id):
@@ -119,10 +138,15 @@ def units_delete(id):
     flash("The measurement unit has been successfully deleted")
     return redirect("/admin/units")
 
+
+'''CRUD for table: ingredients'''
+
+# view all and add new ingredients
 @app.route("/admin/ingredients", methods=["GET", "POST"])
 @login_admin_required
 def ingredients():
     if request.method == 'GET':
+        # implementation of RDMS data retrieval from several related tables
         listCat = db.execute("select * from categories")
         listOri = db.execute("select * from origins")
         ingredients = db.execute("select ingredients.id, image, name, origin, category, description from ingredients inner join origins on ingredients.origin_id = origins.id inner join categories on ingredients.category_id = categories.id")
@@ -141,26 +165,28 @@ def ingredients():
         category = request.form.get("category")
         img_src = request.form.get("img_src")
         f = request.files['file']
-        print(f)
+        # upload file
         if f.filename == '':
             return apology('No selected file')
         description = request.form.get("description")
         if f and allowed_file(f.filename):
             filename = secure_filename(f.filename)
             f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        #f.save(secure_filename(f.filename))
             db.execute("insert into ingredients(image, name, origin_id, category_id, description, img_src) values(?,?,?,?,?,?)", filename, name, origin, category, description, img_src)
             return redirect("/admin/ingredients")
         else:
             return apology("pilih file dulu")
 
+# view an ingredient
 @app.route("/admin/ingredients/<id>/view", methods=["GET"])
 @login_admin_required
 def admin_view_ingredient(id):
+    # retrieve the ingredient from ingredient table and the ingredient origin from origins table
     ingredient = db.execute("select * from ingredients where id = ?",id)[0]
     origin = db.execute("select origin from origins inner join ingredients on origins.id = ingredients.origin_id where ingredients.id = ?", id)[0]
     return render_template("/admin/admin_view_ingredient.html", ingredient=ingredient, origin=origin)
 
+# edit an ingredient
 @app.route("/admin/ingredients/<id>/edit", methods=["GET", "POST"])
 @login_admin_required
 def ingredients_edit(id):
@@ -190,13 +216,13 @@ def ingredients_edit(id):
         if f and allowed_file(f.filename):
             filename = secure_filename(f.filename)
             f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        #f.save(secure_filename(f.filename))
             db.execute("update ingredients set image = ?, name = ?, origin_id = ?, category_id = ?, description = ? where id = ?", filename, name, origin, category, description, id)
             flash("The ingredient has been sucessfully edited")
             return redirect("/admin/ingredients")
         else:
             return apology("pilih file dulu")
 
+# delete an ingredient
 @app.route("/admin/ingredients/<id>/delete", methods=["GET"])
 @login_admin_required
 def ingredient_delete(id):
@@ -204,9 +230,10 @@ def ingredient_delete(id):
     flash("The ingredient has been successfully deleted")
     return redirect("/admin/ingredients")
 
-# TODO: view ingredient description
 
+'''CRUD for table: origins'''
 
+# view all and add new ingredient origin
 @app.route("/admin/origins", methods=["GET", "POST"])
 @login_admin_required
 def origins():
@@ -220,8 +247,8 @@ def origins():
             neworigin = request.form.get("origin")
             db.execute("insert into origins (origin) values(?)", neworigin)
             return redirect("/admin/origins")
-    #return apology("Bagian origins belum dikerjain?", 403)
 
+# edit an ingredient origin
 @app.route("/admin/origins/<id>/edit", methods=["GET", "POST"])
 @login_admin_required
 def origins_edit(id):
@@ -236,6 +263,7 @@ def origins_edit(id):
         flash("The ingredient origin has been sucessfully edited")
         return redirect("/admin/origins")
 
+# delete an ingredient origin
 @app.route("/admin/origins/<id>/delete", methods=["GET"])
 @login_admin_required
 def origins_delete(id):
@@ -243,6 +271,10 @@ def origins_delete(id):
     flash("The ingredient origin has been successfully deleted")
     return redirect("/admin/origins")
 
+
+'''CRUD for table: categories'''
+
+# view all and add new category
 @app.route("/admin/categories", methods=["GET", "POST"])
 @login_admin_required
 def categories():
@@ -256,8 +288,8 @@ def categories():
             newcat = request.form.get("category")
             db.execute("insert into categories (category) values (?)", newcat)
             return redirect("/admin/categories")
-    #return apology("Bagian categories belum dikerjain?", 403)
 
+# edit a category
 @app.route("/admin/categories/<id>/edit", methods=["GET", "POST"])
 @login_admin_required
 def categories_edit(id):
@@ -272,6 +304,7 @@ def categories_edit(id):
         flash("The category has been successfully edited")
         return redirect("/admin/categories")
 
+# delete a category
 @app.route("/admin/categories/<id>/delete", methods=["GET"])
 @login_admin_required
 def categories_delete(id):
@@ -279,6 +312,10 @@ def categories_delete(id):
     flash("The category has been successfully deleted")
     return redirect("/admin/categories")
 
+
+'''CRUD for recipes'''
+
+# view all recipes
 @app.route("/admin/recipes", methods=["GET"])
 @login_admin_required
 def show_recipes_admin():
@@ -287,53 +324,36 @@ def show_recipes_admin():
         return render_template("/admin/show_recipes_admin.html", recipes = recipes)
 
 
+# add a new recipe
 @app.route("/admin/recipe/add/", methods=["GET", "POST"])
 @login_admin_required
 def add_recipes_2():
-    # print(id)
     if request.method == "GET":
         ingredients = db.execute("SELECT * from ingredients order by name ASC")
         units = db.execute("select * from units order by name ASC")
         origins = db.execute("SELECT * from origins order by origin ASC")
-        #recipe = db.execute("select * from recipes where id = ?", id)[0]
-        # ingredients = sorted(ingredients)
-        # print(ingredients)
         return render_template('/admin/add_recipe_admin.html', ingredients=ingredients, units=units, origins=origins)
     elif request.method == "POST":
-        # if not request.form.get("ingredients"):
-        #     return apology("choose at least one ingredient")
-        # elif not request.form.get("quantity"):
-        #     return apology("input quantity")
-        # elif not request.form.get("unit"):
-        #     return apology("specify the measurement unit")
-        ingredients = request.form.getlist("ingredients") #this will return a list / dictionary
-        print(ingredients)
+        # retrieve the inputted ingredients as a list
+        ingredients = request.form.getlist("ingredients")
+        # remove empty ingredients
         while("" in ingredients):
             ingredients.remove("")
-        # ingredients.remove('')
-        print(ingredients)
-            
+
+        # retrieve quantities as a list    
         quantities = request.form.getlist("quantity")
-        print(quantities)
+        # remove empty quantities
         while("" in quantities):
             quantities.remove("")
-        # quantities.remove('')
-        print(quantities)
 
+        # retrieve units as a list
         units = request.form.getlist("unit")
-        print(units)
+        # remove empty units
         while("" in units):
             units.remove("")
-        # units.remove('')
-        print(units)
 
+        # retrieve all other inputs
         instruction = request.form.get("instruction")
-        # if not request.form.get("name"):
-        #     return apology("name belum diisi")
-        # elif not request.form.get("origin"):
-        #     return apology("origin belum diisi")
-        # elif not request.form.get("description"):
-        #     return apology("description belum diisi")
         name = request.form.get("name")
         origin = request.form.get("origin")
         description = request.form.get("description")
@@ -345,13 +365,12 @@ def add_recipes_2():
         if f and allowed_file(f.filename):
             filename = secure_filename(f.filename)
             f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            # insert recipe data into recipe table
             db.execute("insert into recipes(name, origin_id, image, description, img_src, recipe_src) values(?,?,?,?,?,?)", name, origin, filename, description, img_src, recipe_src)
             current_recipe = db.execute("select id from recipes order by id desc limit 1")[0]
             print(current_recipe['id'])
             current_recipe_id = str(current_recipe['id'])
-            # ingredients = db.execute("select * from ingredients")
-            # units = db.execute("select * from units")
-            # return render_template("/admin/add_ingredients_instructions_admin.html", id = current_recipe_id, ingredients = ingredients, units = units)
+            # insert ingredients into recipe_ingredients table
             for (ingredient, quantity, unit) in zip(ingredients, quantities, units):
                 db.execute("insert into recipe_ingredients(recipe_id, ingredients_id, qty, unit_id) values(?,?,?,?)",current_recipe_id, ingredient, quantity, unit)
             db.execute("insert into instructions(recipe_id, instructions) values(?,?)", current_recipe_id, instruction)
@@ -365,34 +384,32 @@ def add_recipes_2():
 @login_admin_required
 def show_recipe_admin(id):
     recipe = db.execute("select * from recipes where id = ?", id)[0]
-    # print(recipe)
     ingredients = db.execute("select * from recipe_ingredients inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id where recipe_id = ?", id)
     instructions = db.execute("select * from instructions where recipe_id = ?", id)[0]
     units = db.execute("select units.name from units inner join recipe_ingredients on units.id = recipe_ingredients.unit_id where recipe_id = ?", id)
-    # print(units)
     origin = db.execute("select origins.origin from origins inner join recipes on origins.id = recipes.origin_id where recipes.id = ?", id)[0]
     print(units)
     full_recipe = db.execute("select recipes.name as recipename, recipes.description, recipes.image, recipes.recipe_src, recipes.img_src as imgsrc, origins.origin, recipe_ingredients.qty, instructions.instructions, units.name as unitname, ingredients.name as ingredientname from recipes inner join origins on recipes.origin_id = origins.id inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join instructions on recipes.id = instructions.recipe_id inner join units on recipe_ingredients.unit_id = units.id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id where recipes.id = ?", id)
     source = db.execute("select img_src, recipe_src from recipes where id = ?",id)[0]
-    return render_template("/admin/show_recipe_admin.html", recipe=recipe, ingredients=ingredients, instructions=instructions, units=units, origin=origin, full_recipe=full_recipe, source=source)# show a recipe detail
+    return render_template("/admin/show_recipe_admin.html", recipe=recipe, ingredients=ingredients, instructions=instructions, units=units, origin=origin, full_recipe=full_recipe, source=source)
 
-# show a recipe detail
+
+# show a submitted recipe detail
 @app.route("/admin/recipe/show/submitted/<id>", methods=["GET"])
 @login_admin_required
 def show_submitted_recipe_admin(id):
     recipe = db.execute("select * from recipes_submitted where id = ?", id)[0]
-    # print(recipe)
     ingredients = db.execute("select * from recipe_ingredients_submitted inner join ingredients on recipe_ingredients_submitted.ingredients_id = ingredients.id where recipe_id = ?", id)
     instructions = db.execute("select * from instructions_submitted where recipe_id = ?", id)[0]
     units = db.execute("select units.name from units inner join recipe_ingredients_submitted on units.id = recipe_ingredients_submitted.unit_id where recipe_id = ?", id)
-    # print(units)
     origin = db.execute("select origins.origin from origins inner join recipes_submitted on origins.id = recipes_submitted.origin_id where recipes_submitted.id = ?", id)[0]
     print(units)
     full_recipe = db.execute("select recipes_submitted.name as recipename, recipes_submitted.description, recipes_submitted.image, recipes_submitted.recipe_src, recipes_submitted.img_src as imgsrc, origins.origin, recipe_ingredients_submitted.qty, instructions_submitted.instructions, units.name as unitname, ingredients.name as ingredientname from recipes_submitted inner join origins on recipes_submitted.origin_id = origins.id inner join recipe_ingredients_submitted on recipes_submitted.id = recipe_ingredients_submitted.recipe_id inner join instructions_submitted on recipes_submitted.id = instructions_submitted.recipe_id inner join units on recipe_ingredients_submitted.unit_id = units.id inner join ingredients on recipe_ingredients_submitted.ingredients_id = ingredients.id where recipes_submitted.id = ?", id)
     source = db.execute("select img_src, recipe_src from recipes_submitted where id = ?",id)[0]
-    return render_template("/admin/show_recipe_admin.html", recipe=recipe, ingredients=ingredients, instructions=instructions, units=units, origin=origin, full_recipe=full_recipe, source=source)# show a recipe detail
+    return render_template("/admin/show_recipe_admin.html", recipe=recipe, ingredients=ingredients, instructions=instructions, units=units, origin=origin, full_recipe=full_recipe, source=source)
 
-# TODO: edit recipe admin
+
+# edit recipe as admin
 @app.route("/admin/recipe/<id>/edit", methods=["GET","POST"])
 @login_admin_required
 def recipe_edit(id):
@@ -404,6 +421,8 @@ def recipe_edit(id):
         units = db.execute("select * from units order by name asc")
         return render_template("/admin/edit_recipe.html", origins=origins, recipe=recipe, ingredients=ingredients, instruction=instruction, units=units)
     elif request.method == "POST":
+
+        # delete ingredients first to bypass foreign key constraints
         db.execute("delete from recipe_ingredients where recipe_id = ?", id)
         if not request.form.get("name"):
             return apology("")
@@ -419,38 +438,36 @@ def recipe_edit(id):
         if f and allowed_file(f.filename):
             filename = secure_filename(f.filename)
             f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            # update recipe data
             db.execute("update recipes set name = ?, origin_id = ?, description = ?, image = ? where recipes.id = ?", name, origin, description, filename, id)
         
-        ingredients = request.form.getlist("ingredients") #this will return a list / dictionary
-        print(ingredients)
+        # get list of ingredients and remove empty ones
+        ingredients = request.form.getlist("ingredients") 
         while("" in ingredients):
             ingredients.remove("")
-        # ingredients.remove('')
-        print(ingredients)
-            
+
+        # get list of quantities and remove empty ones    
         quantities = request.form.getlist("quantity")
-        print(quantities)
         while("" in quantities):
             quantities.remove("")
-        # quantities.remove('')
-        print(quantities)
 
+        # get list of units and remove empty ones 
         units = request.form.getlist("unit")
-        print(units)
         while("" in units):
             units.remove("")
-        # units.remove('')
-        print(units)
 
+        # get instructions
         instruction = request.form.get("instruction")
 
+        # insert edited ingredients into the table
         for (ingredient, quantity, unit) in zip(ingredients, quantities, units):
             db.execute("insert into recipe_ingredients(recipe_id, ingredients_id, qty, unit_id) values(?,?,?,?)",id, ingredient, quantity, unit)
+
+        # update the instructions
         db.execute("update instructions set instructions = ? where recipe_id = ?", instruction, id)
         return redirect('/admin/recipe/show/'+id)
 
-7
-# TODO: delete recipe admin
+# delete recipe as admin
 @app.route("/admin/recipe/<id>/delete", methods=["GET"])
 @login_admin_required
 def recipe_delete(id):
@@ -459,13 +476,16 @@ def recipe_delete(id):
     db.execute("delete from recipes where id=?", id)
     return redirect("/admin/recipes")
 
+# view all submitted recipes as admin
 @app.route("/admin/recipes/submitted", methods=["GET"])
 @login_admin_required
 def show_recipes_submitted_admin():
     if request.method == 'GET':
         recipes = db.execute("select recipes_submitted.status, recipes_submitted.id, recipes_submitted.name as recipe_name, recipes_submitted.image, recipes_submitted.description, recipe_ingredients_submitted.qty, instructions_submitted.instructions, units.name as unit_name from recipes_submitted inner join recipe_ingredients_submitted on recipes_submitted.id = recipe_ingredients_submitted.recipe_id inner join ingredients on recipe_ingredients_submitted.ingredients_id = ingredients.id inner join units on recipe_ingredients_submitted.unit_id = units.id inner join instructions_submitted on recipes_submitted.id = instructions_submitted.recipe_id group by recipes_submitted.id order by recipes_submitted.created_at desc")
         return render_template("/admin/show_submitted_recipes_admin.html", recipes = recipes)
-    
+
+
+# approve a submitted recipe as admin
 @app.route("/admin/recipe/<id>/approve",  methods=["GET"])
 @login_admin_required
 def approve_recipe(id):
@@ -483,6 +503,8 @@ def approve_recipe(id):
     flash("Recipe has been approved successfully")
     return redirect("/admin/recipes/submitted")
 
+
+# reject a submitted recipe as admin
 @app.route("/admin/recipe/<id>/reject",  methods=["GET"])
 @login_admin_required
 def reject_recipe(id):
@@ -490,6 +512,8 @@ def reject_recipe(id):
     flash("Recipe has been rejected successfully")
     return redirect("/admin/recipes/submitted")
 
+
+# view all members and edit profile as admin
 @app.route("/admin/users", methods=["GET", "POST"])
 @login_admin_required
 def users():
@@ -515,85 +539,91 @@ def users():
             return redirect("/admin/users")
 
 
+'''functions for members and public'''
+
+# recipe search for public
 @app.route("/recipe/search", methods=["GET", "POST"])
 def recipe_search():
     global search_result
     if request.method == "GET":
         ingredients = db.execute("select * from ingredients")
+        # get latest recipes
         latest_recipes = db.execute("select recipes.id, recipes.name as recipe_name, recipes.image, recipes.description, recipe_ingredients.qty, instructions.instructions, units.name as unit_name from recipes inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id inner join units on recipe_ingredients.unit_id = units.id inner join instructions on recipes.id = instructions.recipe_id group by recipes.id order by recipes.created_at desc limit 4")
-        # global search_result
         search_result.clear()
         return render_template("search_recipes.html", ingredients=ingredients, latest_recipes=latest_recipes)
     elif request.method == "POST":
         if not request.form.get("ingredients"):
             return apology("pilih dulu minimal 1 ingredients")
         keywords = request.form.getlist("ingredients")
-        print(keywords)
+  
+        # search for recipes according to ingredients
         where_clause = ""
         for i in range(1, len(keywords)):
             where_clause += " or recipe_ingredients.ingredients_id = " + keywords[i]
         where_clause = "where recipe_ingredients.ingredients_id = " +keywords[0] + where_clause
-        print(where_clause)
        
-        # results = list()
+       # retrieving results
         results = db.execute("select recipes.id, recipes.name as recipe_name, recipes.image, recipes.description, recipe_ingredients.qty, instructions.instructions, units.name as unit_name from recipes inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id inner join units on recipe_ingredients.unit_id = units.id inner join instructions on recipes.id = instructions.recipe_id "+ where_clause + " group by recipes.id")
-            # results.append(result)
-        print(results)
+
+        # handle empty result
         if not results:
             flash("No recipes found")
             return redirect("/recipe/search")
         
+        # render results
         search_result = results
         prompt ="Here are some recipes for you!"
         return render_template("search_result.html", results=results, prompt=prompt)
 
+
+# member dashboard
 @app.route("/dashboard", methods=["GET", "POST"])
 @login_required
 def user_dashboard():
     global search_result
-    #name = session["name"]
     id = session["user_id"]
     name = db.execute("select name from users where id = ?", id)
     if request.method == "GET":
         ingredients = db.execute("select * from ingredients")
         latest_recipes = db.execute("select recipes.id, recipes.name as recipe_name, recipes.image, recipes.description, recipe_ingredients.qty, instructions.instructions, units.name as unit_name from recipes inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id inner join units on recipe_ingredients.unit_id = units.id inner join instructions on recipes.id = instructions.recipe_id group by recipes.id order by recipes.created_at desc limit 4")
-        # global search_result
         search_result.clear()
         return render_template("dashboard.html", name=name[0], ingredients=ingredients, latest_recipes=latest_recipes)
     elif request.method == "POST":
         if not request.form.get("ingredients"):
             return apology("pilih dulu minimal 1 ingredients")
         keywords = request.form.getlist("ingredients")
-        print(keywords)
+   
+        # handle recipe search from dashboard
         where_clause = ""
         for i in range(1, len(keywords)):
             where_clause += " or recipe_ingredients.ingredients_id = " + keywords[i]
         where_clause = "where recipe_ingredients.ingredients_id = " +keywords[0] + where_clause
         print(where_clause)
-       
-        # results = list()
+
         results = db.execute("select recipes.id, recipes.name as recipe_name, recipes.image, recipes.description, recipe_ingredients.qty, instructions.instructions, units.name as unit_name from recipes inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id inner join units on recipe_ingredients.unit_id = units.id inner join instructions on recipes.id = instructions.recipe_id "+ where_clause + " group by recipes.id")
-            # results.append(result)
-        print(results)
+            
+        # handle empty results
         if not results:
             flash("No recipes found")
             return redirect("/dashboard")
         
+        # render search results
         search_result = results
         prompt ="Here are some recipes for you!"
         return render_template("search_result.html", results=results, prompt=prompt)
 
+
+# show search results
 @app.route('/show_search_results', methods=['GET', 'POST'])
 def show_search_results():
     prompt ="Here are some recipes for you!"
     return render_template("search_result.html", results=search_result, prompt=prompt)
 
+# show a recipe for public
 @app.route("/recipe/show/<id>", methods=["GET"])
 def show_recipe(id):
     recipe = db.execute("select * from recipes where id = ?", id)[0]
-    # print(recipe)
     ingredients = db.execute("select * from recipe_ingredients inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id where recipe_id = ?", id)
-    # print(ingredients)
     instructions = db.execute("select * from instructions where recipe_id = ?", id)[0]
     units = db.execute("select units.name from units inner join recipe_ingredients on units.id = recipe_ingredients.unit_id where recipe_id = ?", id)
     origin = db.execute("select origins.origin from origins inner join recipes on origins.id = recipes.origin_id where recipes.id = ?", id)[0]
@@ -603,13 +633,13 @@ def show_recipe(id):
     is_search = len(search_result)
     return render_template("show_recipe.html", is_search=is_search, results=search_result, recipe=recipe, ingredients=ingredients, instructions=instructions, units=units, origin = origin, full_recipe = full_recipe, source = source)
 
+
+# show a submitted recipe detail for a member
 @app.route("/recipe/submitted/show/<id>", methods=["GET"])
 @login_required
 def show_submitted_recipe(id):
     recipe = db.execute("select * from recipes_submitted where id = ?", id)[0]
-    # print(recipe)
     ingredients = db.execute("select * from recipe_ingredients_submitted inner join ingredients on recipe_ingredients_submitted.ingredients_id = ingredients.id where recipe_id = ?", id)
-    # print(ingredients)
     instructions = db.execute("select * from instructions_submitted where recipe_id = ?", id)[0]
     units = db.execute("select units.name from units inner join recipe_ingredients_submitted on units.id = recipe_ingredients_submitted.unit_id where recipe_id = ?", id)
     origin = db.execute("select origins.origin from origins inner join recipes_submitted on origins.id = recipes_submitted.origin_id where recipes_submitted.id = ?", id)[0]
@@ -620,6 +650,8 @@ def show_submitted_recipe(id):
     flash("You have successfully submitted a recipe! We will get into it soon!")
     return render_template("show_recipe.html", is_search=is_search, results=search_result, recipe=recipe, ingredients=ingredients, instructions=instructions, units=units, origin = origin, full_recipe = full_recipe, source = source)
 
+
+# show all recipe for public
 @app.route("/recipe/show/all", methods=["GET", "POST"])
 def show_recipes():
     global search_result
@@ -627,8 +659,11 @@ def show_recipes():
         search_result.clear()
         recipes = db.execute("select recipes.id, recipes.name as recipe_name, recipes.image, recipes.description, recipe_ingredients.qty, instructions.instructions, units.name as unit_name from recipes inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id inner join units on recipe_ingredients.unit_id = units.id inner join instructions on recipes.id = instructions.recipe_id group by recipes.id order by recipes.created_at desc")
         return render_template("show_recipes.html", recipes=recipes)
-    
+
+
+# show all submitted recipes 
 @app.route("/recipe/show/submitted", methods=["GET"])
+@login_required
 def show_submitted_recipes():
     user_id = session["user_id"]
     global search_result
@@ -637,7 +672,9 @@ def show_submitted_recipes():
         recipes = db.execute("select recipes_submitted.status, recipes_submitted.id, recipes_submitted.name as recipe_name, recipes_submitted.image, recipes_submitted.description, recipe_ingredients_submitted.qty, instructions_submitted.instructions, units.name as unit_name from recipes_submitted inner join recipe_ingredients_submitted on recipes_submitted.id = recipe_ingredients_submitted.recipe_id inner join ingredients on recipe_ingredients_submitted.ingredients_id = ingredients.id inner join units on recipe_ingredients_submitted.unit_id = units.id inner join instructions_submitted on recipes_submitted.id = instructions_submitted.recipe_id where recipes_submitted.user_id = ? group by recipes_submitted.id order by recipes_submitted.created_at desc", user_id)
         print(recipes)
         return render_template("show_submitted_recipes.html", recipes=recipes)
+    
 
+# handle submit recipe for members
 @app.route("/recipe/submit", methods=["GET", "POST"])
 @login_required
 def submit_recipe():
@@ -646,45 +683,25 @@ def submit_recipe():
         ingredients = db.execute("SELECT * from ingredients order by name ASC")
         units = db.execute("select * from units order by name ASC")
         origins = db.execute("SELECT * from origins order by origin ASC")
-        #recipe = db.execute("select * from recipes where id = ?", id)[0]
-        # ingredients = sorted(ingredients)
-        # print(ingredients)
         return render_template('add_recipe.html', ingredients=ingredients, units=units, origins=origins)
     elif request.method == "POST":
-        # if not request.form.get("ingredients"):
-        #     return apology("choose at least one ingredient")
-        # elif not request.form.get("quantity"):
-        #     return apology("input quantity")
-        # elif not request.form.get("unit"):
-        #     return apology("specify the measurement unit")
         ingredients = request.form.getlist("ingredients") #this will return a list / dictionary
-        print(ingredients)
+
+        # removing empty data
         while("" in ingredients):
             ingredients.remove("")
-        # ingredients.remove('')
-        print(ingredients)
             
         quantities = request.form.getlist("quantity")
         print(quantities)
         while("" in quantities):
             quantities.remove("")
-        # quantities.remove('')
-        print(quantities)
 
         units = request.form.getlist("unit")
         print(units)
         while("" in units):
             units.remove("")
-        # units.remove('')
-        print(units)
 
         instruction = request.form.get("instruction")
-        # if not request.form.get("name"):
-        #     return apology("name belum diisi")
-        # elif not request.form.get("origin"):
-        #     return apology("origin belum diisi")
-        # elif not request.form.get("description"):
-        #     return apology("description belum diisi")
         name = request.form.get("name")
         origin = request.form.get("origin")
         description = request.form.get("description")
@@ -700,9 +717,6 @@ def submit_recipe():
             current_recipe = db.execute("select id from recipes_submitted order by id desc limit 1")[0]
             print(current_recipe['id'])
             current_recipe_id = str(current_recipe['id'])
-            # ingredients = db.execute("select * from ingredients")
-            # units = db.execute("select * from units")
-            # return render_template("/admin/add_ingredients_instructions_admin.html", id = current_recipe_id, ingredients = ingredients, units = units)
             for (ingredient, quantity, unit) in zip(ingredients, quantities, units):
                 db.execute("insert into recipe_ingredients_submitted(recipe_id, ingredients_id, qty, unit_id) values(?,?,?,?)",current_recipe_id, ingredient, quantity, unit)
             db.execute("insert into instructions_submitted(recipe_id, instructions) values(?,?)", current_recipe_id, instruction)
@@ -710,12 +724,15 @@ def submit_recipe():
         else:
             return apology("pilih file dulu")
 
-    
+
+# render landing page    
 @app.route('/', methods=["GET"])
 def landingpage():
     latest_recipes = db.execute("select recipes.id, recipes.name as recipe_name, recipes.image, recipes.description, recipe_ingredients.qty, instructions.instructions, units.name as unit_name from recipes inner join recipe_ingredients on recipes.id = recipe_ingredients.recipe_id inner join ingredients on recipe_ingredients.ingredients_id = ingredients.id inner join units on recipe_ingredients.unit_id = units.id inner join instructions on recipes.id = instructions.recipe_id group by recipes.id order by recipes.created_at desc limit 4")
     return render_template("index.html", latest_recipes=latest_recipes)
 
+
+# register a new user
 @app.route("/register", methods=["GET", "POST"])
 def register():
     session.clear()
@@ -743,8 +760,6 @@ def register():
         if password == password_repeat:
             db.execute("insert into users (username, name, password, email, role) values (?, ?, ?, ?, ?)", username, name, hash, email, "member")
 
-        #store in session
-
             registered_user = db.execute("select * from users where username = ?", username)
             session["user_id"] = registered_user[0]["id"]
             session["role"] = registered_user[0]["role"]
@@ -756,8 +771,8 @@ def register():
     else:
         return render_template("register.html")
 
-   # return apology("Fitur register beum dikerjain?", 403)
 
+# login user
 @app.route("/login", methods=["GET", "POST"])
 def login():
     session.clear()
@@ -770,6 +785,7 @@ def login():
         if len(rows) != 1 or not check_password_hash(rows[0]["password"], request.form.get("password")):
             return apology("Password/username salah?", 403)
         elif len(rows) == 1:
+            # handle multi level authentication
             if rows[0]["role"] == "member":
                 session["user_id"] = rows[0]["id"]
                 session["role"] = rows[0]["role"]
@@ -787,9 +803,7 @@ def login():
     else:
         return render_template("login.html")
 
-
-   # return apology("Fitur login beum dikerjain?", 403)
-
+# logout
 @app.route("/logout")
 def logout():
     session.clear
