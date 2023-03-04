@@ -6,6 +6,7 @@
     <div class="col-md-12 mt-2">
       <form action="/admin/users" class="form-horizontal" method="POST">
         <div class="form-group my-2">
+          <label for="username">Username</label>
           <input
             type="text"
             name="username"
@@ -14,6 +15,7 @@
           />
         </div>
         <div class="form-group my-2">
+          <label for="name">Name</label>
           <input
             type="text"
             name="name"
@@ -22,6 +24,7 @@
           />
         </div>
         <div class="form-group my-2">
+          <label for="email">Email</label>
           <input
             type="email"
             name="email"
@@ -29,6 +32,7 @@
             value="{{ my_account['email'] }}"
           />
         </div>
+        <label>Change Password</label>
         <div class="form-group my-2">
           <input
             type="password"

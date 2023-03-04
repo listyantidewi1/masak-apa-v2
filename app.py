@@ -67,15 +67,15 @@ def profile():
             if not request.form.get("password"):
                 db.execute("update users set username = ?, name=?, email = ? where id = ?", username, name, email, id)
                 flash("Profile updated")
-                return redirect("/admin/users")
+                return redirect("/profile")
             else:
                 # if changing password
                 db.execute("update users set password=?, username=?, name=?, email=? where id = ?", hash, username, name, email, id)
                 flash("Profile updated")
-                return redirect("/admin/users")
+                return redirect("/profile")
         else:
             flash("Profile update failed")
-            return redirect("/admin/users")
+            return redirect("/profile")
 
 
 # admin dashboard                       
