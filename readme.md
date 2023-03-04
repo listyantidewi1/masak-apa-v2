@@ -82,7 +82,7 @@ As a member, you can submit a recipe which will be subject to the administrator'
 
 ![Submitted recipe](https://raw.githubusercontent.com/listyantidewi1/masak-apa-v2/main/screenshots/submitted-recipe.png)
 
-To submit for recipe(s), you need to be logged in as member, and navigate to the `submit recipe` menu on the top navbar. You will be provided with a form, on wich you can feel the recipe's details, including ingredients, quantity and measurement units used, photo, instruction, and sources.
+To submit for recipe(s), you need to be logged in as member, and navigate to the `submit recipe` menu on the top navbar. You will be provided with a form, on wich you can fill the recipe's details, including ingredients, quantity and measurement units used, photo, instruction, and sources.
 
 ![Add new recipe](https://raw.githubusercontent.com/listyantidewi1/masak-apa-v2/main/screenshots/add-recipe-1.png)
 ![Add ingredients and instructions](https://raw.githubusercontent.com/listyantidewi1/masak-apa-v2/main/screenshots/add-ingredients.png)
